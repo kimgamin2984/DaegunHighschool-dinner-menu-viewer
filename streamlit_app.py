@@ -12,7 +12,6 @@ filename = f"25_{month}_Dinner_Menu.pdf"
 st.title("오늘의 석식 메뉴")
 st.write(f"조회일: {date_str}")
 
-# 파일 존재 여부 확인
 if not os.path.exists(filename):
     st.error(f"{month}월 석식 PDF 파일이 존재하지 않습니다.")
 else:
@@ -31,7 +30,6 @@ else:
                         for next_row in data[data.index(row)+1:]:
                             if len(next_row) > i and next_row[i]:
                                 menu_items = next_row[i].strip().split("\n")
-                                st.subheader("오늘 저녁 메뉴")
                                 for item in menu_items:
                                     st.markdown(f"- {item.strip()}")
                                 menu_found = True
