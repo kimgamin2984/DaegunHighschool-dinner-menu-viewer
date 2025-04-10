@@ -7,7 +7,7 @@ from pytz import timezone
 month = datetime.now(timezone('Asia/Seoul')).month
 day = datetime.now(timezone('Asia/Seoul')).day
 date_str = f"{month:02}월 {day:02}일"
-filename = f"25_{month}_Dinner_Menu.pdf"
+filename = "Dinner_Menu.pdf"
 
 st.title("오늘의 석식 메뉴")
 st.write(f"조회일: {date_str}")
