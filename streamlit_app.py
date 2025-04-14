@@ -2,8 +2,10 @@ import streamlit as st
 import fitz
 from datetime import datetime
 import os
+import requests
 from pytz import timezone
 
+today = datetime.now(timezone('Asia/Seoul'))
 month = datetime.now(timezone('Asia/Seoul')).month
 day = datetime.now(timezone('Asia/Seoul')).day
 date_str = f"{month:02}월 {day:02}일"
@@ -44,3 +46,40 @@ else:
 
     if not menu_found:
         st.warning(f"{date_str} 석식 메뉴를 찾을 수 없습니다.")
+
+st.divider()
+
+st.title("[오늘의 시간표]")
+
+API_KEY = 'a674e173d3784aac9f10e73862de6dfb'
+ATPT_OFCDC_SC_CODE = 'D10'
+SD_SCHUL_CODE = '7240082'
+
+selected_grade = st.selectbox("학년을 선택하세요", ["1", "2", "3"])
+selected_class = st.selectbox("반을 선택하세요", [str(i) for i in range(1,10)])
+GRADE = selected_grade
+CLASS_NM = selected_class
+
+ALL_TI_YMD = today.strftime("%Y%m%d")
+
+url = 'https://open.neis.go.kr/hub/hisTimetable'
+params = {
+    'KEY': API_KEY,
+    'Type': 'json',
+    'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
+    'SD_SCHUL_CODE': SD_SCHUL_CODE,
+    'GRADE': GRADE,
+    'CLASS_NM': CLASS_NM,
+    'ALL_TI_YMD': ALL_TI_YMD
+}
+
+res = requests.get(url, params=params)
+data = res.json()
+
+try:
+    timetable = data['hisTimetable'][1]['row']
+    st.subheader(f"{month}월 {day}일 시간표 - {GRADE}학년 {CLASS_NM}반")
+    for period in timetable:
+        st.write(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
+except:
+    st.error("시간표 정보를 불러올 수 없어요.")
