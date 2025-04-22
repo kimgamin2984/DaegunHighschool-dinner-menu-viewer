@@ -94,12 +94,10 @@ with tab3:
         'ALL_TI_YMD': ALL_TI_YMD
     }
 
-    # 전체 시간표 데이터를 한 번에 받아옴
     try:
         res = requests.get(url, params=params, timeout=30)
         data = res.json()
 
-        # 'hisTimetable'이 리스트 형식으로 반환됨
         timetable = data.get('hisTimetable', [])[1].get('row', [])
 
         if timetable:
