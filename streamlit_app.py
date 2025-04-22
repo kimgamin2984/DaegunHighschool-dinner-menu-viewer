@@ -20,10 +20,10 @@ ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
 today_str = today.strftime("%Y%m%d")
 
-tab1, tab2, tab3 = st.tabs(["점심", "석식", "시간표"])
+tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
 with tab1:
-    st.markdown("## 오늘 점심 메뉴")
+    st.markdown("## 오늘 중식 메뉴")
     url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
     params = {
         'KEY': API_KEY,
@@ -38,7 +38,7 @@ with tab1:
         meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
         cleaned_meals = meals.replace('<br/>', '\n')
         for item in cleaned_meals.strip().split("\n"):
-            st.text(item.strip())
+            st.markdown(f"- {item.strip()}")
     except:
         st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
 
