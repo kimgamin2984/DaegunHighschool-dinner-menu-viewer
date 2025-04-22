@@ -12,7 +12,7 @@ day = today.day
 date_str = f"{month:02}월 {day:02}일"
 filename = "Dinner_Menu.pdf"
 
-st.text(f"조회일: {date_str}")
+#st.text(f"조회일: {date_str}")
 
 load_dotenv()
 API_KEY = os.getenv("NEIS_KEY")
