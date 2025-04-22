@@ -12,7 +12,7 @@ day = today.day
 date_str = f"{month:02}월 {day:02}일"
 filename = "Dinner_Menu.pdf"
 
-#st.text(f"조회일: {date_str}")
+st.text(f"조회일: {date_str}")
 
 load_dotenv()
 API_KEY = os.getenv("NEIS_KEY")
@@ -98,5 +98,6 @@ with tab3:
         timetable = data['hisTimetable'][1]['row']
         for period in timetable:
             st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
+        st.json(data)
     except:
         st.error("시간표 정보를 불러올 수 없어요.")
