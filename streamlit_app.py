@@ -32,7 +32,7 @@ with tab1:
         'SD_SCHUL_CODE': SD_SCHUL_CODE,
         'MLSV_YMD': today_str
     }
-    response = requests.get(url, params=params)
+    response = requests.get(url, params=params, timeout=30)
     data = response.json()
     try:
         meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
@@ -92,7 +92,7 @@ with tab3:
         'CLASS_NM': CLASS_NM,
         'ALL_TI_YMD': ALL_TI_YMD
     }
-    res = requests.get(url, params=params)
+    res = requests.get(url, params=params, timeout=30)
     data = res.json()
     try:
         timetable = data['hisTimetable'][1]['row']
