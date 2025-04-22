@@ -11,8 +11,43 @@ month = today.month
 day = today.day
 date_str = f"{month:02}월 {day:02}일"
 filename = "Dinner_Menu.pdf"
-st.title("[오늘 석식 메뉴]")
+
 st.write(f"조회일: {date_str}")
+
+st.divider()
+
+st.title("[오늘 점심 메뉴]")
+
+load_dotenv()
+API_KEY = os.getenv("NEIS_KEY")
+
+ATPT_OFCDC_SC_CODE = 'D10'
+SD_SCHUL_CODE = '7240082'
+today_str = today.strftime("%Y%m%d")
+
+url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
+params = {
+    'KEY': API_KEY,
+    'Type': 'json',
+    'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
+    'SD_SCHUL_CODE': SD_SCHUL_CODE,
+    'MLSV_YMD': today_str
+}
+
+response = requests.get(url, params=params)
+data = response.json()
+
+try:
+    meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
+    cleaned_meals = meals.replace('<br/>', '\n')
+    for item in cleaned_meals.strip().split("\n"):
+        st.write(item.strip())
+except:
+    st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
+
+st.divider()
+
+st.title("[오늘 석식 메뉴]")
 if not os.path.exists(filename):
     st.error(f"{month}월 석식 PDF 파일이 존재하지 않습니다.")
 else:
@@ -46,38 +81,6 @@ else:
 
 st.divider()
 
-st.title("[오늘 점심 메뉴]")
-st.write(f"조회일: {date_str}")
-
-load_dotenv()
-API_KEY = os.getenv("NEIS_KEY")
-
-ATPT_OFCDC_SC_CODE = 'D10'
-SD_SCHUL_CODE = '7240082'
-today_str = today.strftime("%Y%m%d")
-
-url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
-params = {
-    'KEY': API_KEY,
-    'Type': 'json',
-    'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
-    'SD_SCHUL_CODE': SD_SCHUL_CODE,
-    'MLSV_YMD': today_str
-}
-
-response = requests.get(url, params=params)
-data = response.json()
-
-try:
-    meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
-    cleaned_meals = meals.replace('<br/>', '\n')
-    for item in cleaned_meals.strip().split("\n"):
-        st.write(item.strip())
-except:
-    st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
-
-st.divider()
-
 st.title("[오늘의 시간표]")
 
 ATPT_OFCDC_SC_CODE = 'D10'
@@ -105,7 +108,6 @@ data = res.json()
 
 try:
     timetable = data['hisTimetable'][1]['row']
-    st.subheader(f"{month}월 {day}일 시간표 - {GRADE}학년 {CLASS_NM}반")
     for period in timetable:
         st.write(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
 except:
