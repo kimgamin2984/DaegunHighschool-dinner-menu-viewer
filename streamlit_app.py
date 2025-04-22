@@ -95,7 +95,7 @@ with tab3:
     }
 
     try:
-        res = requests.get(url, params=params, timeout=30)
+        res = requests.get(url, params=params, timeout=3600)
         data = res.json()
 
         timetable = data.get('hisTimetable', [])[1].get('row', [])
