@@ -12,13 +12,11 @@ day = today.day
 date_str = f"{month:02}월 {day:02}일"
 filename = "Dinner_Menu.pdf"
 
-st.write(f"조회일: {date_str}")
-
-st.title("[오늘 점심 메뉴]")
+st.text(f"조회일: {date_str}")
+st.markdown("## 오늘 점심 메뉴")
 
 load_dotenv()
 API_KEY = os.getenv("NEIS_KEY")
-
 ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
 today_str = today.strftime("%Y%m%d")
@@ -39,13 +37,13 @@ try:
     meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
     cleaned_meals = meals.replace('<br/>', '\n')
     for item in cleaned_meals.strip().split("\n"):
-        st.write(item.strip())
+        st.markdown(f"- {item.strip()}")
 except:
     st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
 
 st.divider()
+st.markdown("## 오늘 석식 메뉴")
 
-st.title("[오늘 석식 메뉴]")
 if not os.path.exists(filename):
     st.error(f"{month}월 석식 PDF 파일이 존재하지 않습니다.")
 else:
@@ -78,16 +76,12 @@ else:
         st.warning(f"{date_str} 석식 메뉴를 찾을 수 없습니다.")
 
 st.divider()
+st.markdown("## 오늘의 시간표")
 
-st.title("[오늘의 시간표]")
-
-ATPT_OFCDC_SC_CODE = 'D10'
-SD_SCHUL_CODE = '7240082'
 selected_grade = st.selectbox("학년을 선택하세요", ["1", "2", "3"])
 selected_class = st.selectbox("반을 선택하세요", [str(i) for i in range(1, 10)])
 GRADE = selected_grade
 CLASS_NM = selected_class
-
 ALL_TI_YMD = today.strftime("%Y%m%d")
 
 url = 'https://open.neis.go.kr/hub/hisTimetable'
@@ -107,6 +101,6 @@ data = res.json()
 try:
     timetable = data['hisTimetable'][1]['row']
     for period in timetable:
-        st.write(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
+        st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
 except:
     st.error("시간표 정보를 불러올 수 없어요.")
