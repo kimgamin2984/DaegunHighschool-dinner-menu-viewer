@@ -11,39 +11,6 @@ month = today.month
 day = today.day
 date_str = f"{month:02}월 {day:02}일"
 filename = "Dinner_Menu.pdf"
-
-st.title("[오늘 점심 메뉴]")
-st.write(f"조회일: {date_str}")
-
-load_dotenv()
-API_KEY = os.getenv("NEIS_KEY")
-
-ATPT_OFCDC_SC_CODE = 'D10'
-SD_SCHUL_CODE = '7240082'
-today_str = today.strftime("%Y%m%d")
-
-url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
-params = {
-    'KEY': API_KEY,
-    'Type': 'json',
-    'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
-    'SD_SCHUL_CODE': SD_SCHUL_CODE,
-    'MLSV_YMD': today_str
-}
-
-response = requests.get(url, params=params)
-data = response.json()
-
-try:
-    meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
-    cleaned_meals = meals.replace('<br/>', '\n')
-    for item in cleaned_meals.strip().split("\n"):
-        st.write(item.strip())
-except:
-    st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
-
-st.divider()
-
 st.title("[오늘 석식 메뉴]")
 st.write(f"조회일: {date_str}")
 if not os.path.exists(filename):
@@ -76,6 +43,38 @@ else:
             break
     if not menu_found:
         st.warning(f"{date_str} 석식 메뉴를 찾을 수 없습니다.")
+
+st.divider()
+
+st.title("[오늘 점심 메뉴]")
+st.write(f"조회일: {date_str}")
+
+load_dotenv()
+API_KEY = os.getenv("NEIS_KEY")
+
+ATPT_OFCDC_SC_CODE = 'D10'
+SD_SCHUL_CODE = '7240082'
+today_str = today.strftime("%Y%m%d")
+
+url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
+params = {
+    'KEY': API_KEY,
+    'Type': 'json',
+    'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
+    'SD_SCHUL_CODE': SD_SCHUL_CODE,
+    'MLSV_YMD': today_str
+}
+
+response = requests.get(url, params=params)
+data = response.json()
+
+try:
+    meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
+    cleaned_meals = meals.replace('<br/>', '\n')
+    for item in cleaned_meals.strip().split("\n"):
+        st.write(item.strip())
+except:
+    st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
 
 st.divider()
 
