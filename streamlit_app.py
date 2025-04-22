@@ -14,8 +14,6 @@ filename = "Dinner_Menu.pdf"
 
 st.write(f"조회일: {date_str}")
 
-st.divider()
-
 st.title("[오늘 점심 메뉴]")
 
 load_dotenv()
