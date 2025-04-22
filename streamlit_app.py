@@ -82,6 +82,7 @@ with tab3:
     GRADE = selected_grade
     CLASS_NM = selected_class
     ALL_TI_YMD = today.strftime("%Y%m%d")
+
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
         'KEY': API_KEY,
@@ -92,12 +93,23 @@ with tab3:
         'CLASS_NM': CLASS_NM,
         'ALL_TI_YMD': ALL_TI_YMD
     }
-    res = requests.get(url, params=params, timeout=30)
-    data = res.json()
+
+    # 전체 시간표 데이터를 한 번에 받아옴
     try:
-        timetable = data['hisTimetable'][1]['row']
-        for period in timetable:
-            st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
-        st.json(data)
-    except:
-        st.error("시간표 정보를 불러올 수 없어요.")
+        res = requests.get(url, params=params, timeout=30)
+        data = res.json()
+
+        # 'hisTimetable'이 리스트 형식으로 반환됨
+        timetable = data.get('hisTimetable', [])[1].get('row', [])
+
+        if timetable:
+            for period in timetable:
+                period_num = period.get('PERIO')
+                subject = period.get('ITRT_CNTNT')
+                if period_num and subject:
+                    st.text(f"{period_num}교시: {subject}")
+        else:
+            st.error("시간표 데이터를 찾을 수 없습니다.")
+
+    except Exception as e:
+        st.error(f"시간표 정보를 불러오는 중 오류 발생: {str(e)}")
