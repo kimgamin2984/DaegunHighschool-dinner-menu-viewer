@@ -4,6 +4,8 @@ from datetime import datetime
 import os
 import requests
 from pytz import timezone
+from dotenv import load_dotenv
+
 today = datetime.now(timezone('Asia/Seoul'))
 month = today.month
 day = today.day
@@ -47,7 +49,9 @@ st.divider()
 st.title("[오늘 점심 메뉴]")
 st.write(f"조회일: {date_str}")
 
-API_KEY = 'a674e173d3784aac9f10e73862de6dfb'
+load_dotenv()
+API_KEY = os.getenv("NEIS_KEY")
+
 ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
 today_str = today.strftime("%Y%m%d")
