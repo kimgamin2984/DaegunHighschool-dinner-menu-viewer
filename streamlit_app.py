@@ -76,12 +76,11 @@ with tab2:
             st.warning(f"{date_str} 석식 메뉴를 찾을 수 없습니다.")
 
 with tab3:
-    st.markdown("## 오늘의 시간표")
-    selected_grade = st.selectbox("학년을 선택하세요", ["1", "2", "3"])
-    selected_class = st.selectbox("반을 선택하세요", [str(i) for i in range(1, 10)])
-    GRADE = selected_grade
-    CLASS_NM = selected_class
     ALL_TI_YMD = today.strftime("%Y%m%d")
+    st.markdown("## 오늘 시간표")
+
+    grade = st.selectbox("학년", ["1", "2", "3"])
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)])
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
@@ -89,25 +88,17 @@ with tab3:
         'Type': 'json',
         'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
         'SD_SCHUL_CODE': SD_SCHUL_CODE,
-        'GRADE': GRADE,
-        'CLASS_NM': CLASS_NM,
+        'GRADE': grade,
+        'CLASS_NM': class_nm,
         'ALL_TI_YMD': ALL_TI_YMD
     }
 
+    res = requests.get(url, params=params)
+    data = res.json()
+
     try:
-        res = requests.get(url, params=params, timeout=3600)
-        data = res.json()
-
-        timetable = data.get('hisTimetable', [])[1].get('row', [])
-
-        if timetable:
-            for period in timetable:
-                period_num = period.get('PERIO')
-                subject = period.get('ITRT_CNTNT')
-                if period_num and subject:
-                    st.text(f"{period_num}교시: {subject}")
-        else:
-            st.error("시간표 데이터를 찾을 수 없습니다.")
-
-    except Exception as e:
-        st.error(f"시간표 정보를 불러오는 중 오류 발생: {str(e)}")
+        timetable = data['hisTimetable'][1]['row']
+        for period in timetable:
+            st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
+    except:
+        st.error("시간표 정보를 불러올 수 없어요.")
