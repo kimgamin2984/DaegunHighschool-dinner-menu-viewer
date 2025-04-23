@@ -17,7 +17,7 @@ filename = "Dinner_Menu.pdf"
 st.text(f"조회일: {date_str}")
 
 load_dotenv()
-API_KEY = os.getenv("NEIS_KEY1")
+API_KEY = os.getenv("NEIS_KEY")
 ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
 
