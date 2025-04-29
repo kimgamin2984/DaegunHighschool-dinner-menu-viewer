@@ -92,8 +92,10 @@ with tab3:
     grade = st.selectbox("학년", ["1", "2", "3"], index=int(selected_grade) - 1)
     class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(selected_class) - 1)
 
+    # 쿠키 설정 후 새로 고침
     set_cookie("selected_grade", grade)
     set_cookie("selected_class", class_nm)
+    st.experimental_rerun()
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
