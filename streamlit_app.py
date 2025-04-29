@@ -83,6 +83,7 @@ with tab2:
         except Exception as e:
             st.error("파싱 과정 중 오류가 발생했습니다.")
             st.exception(e)
+            
 with tab3:
     st.markdown("## 시간표")
 
