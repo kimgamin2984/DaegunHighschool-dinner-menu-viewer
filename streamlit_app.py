@@ -67,10 +67,10 @@ with tab2:
                                         content = next_row[col_idx]
                                         menu_items = content.strip().split("\n")
                                         st.write(menu_items)
-                                        if menu_items == ["에너지"]:
-                                            raise ValueError(f"{date_str} 석식 식단이 없습니다.")
-                                        for item in menu_items:
-                                            st.markdown(f"- {item.strip()}")
+                                        # if menu_items == ["에너지"]:
+                                        #     raise ValueError(f"{date_str} 석식 식단이 없습니다.")
+                                        # for item in menu_items:
+                                        #     st.markdown(f"- {item.strip()}")
                                         found = True
                                 break
                         if found:
