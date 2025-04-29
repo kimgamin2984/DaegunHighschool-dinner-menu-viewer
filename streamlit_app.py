@@ -90,11 +90,11 @@ with tab2:
 with tab3:
     st.markdown("## 오늘 시간표")
     
-    default_grade = cookies.get("selected_grade") or "1"
-    default_class = cookies.get("selected_class") or "1"
+    grade_index = int(cookies.get("selected_grade") or 1) - 1
+    class_index = int(cookies.get("selected_class") or 1) - 1
 
-    grade = st.selectbox("학년", ["1", "2", "3"], index=int(default_grade) - 1)
-    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(default_class) - 1)
+    grade = st.selectbox("학년", ["1", "2", "3"], index=grade_index)
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=class_index)
 
     cookies.set("selected_grade", grade)
     cookies.set("selected_class", class_nm)
