@@ -23,9 +23,10 @@ SD_SCHUL_CODE = '7240082'
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 
-query_params = st.experimental_get_query_params()
-selected_grade = query_params.get("grade", ["1"])[0]
-selected_class = query_params.get("class_nm", ["1"])[0]
+if 'selected_grade' not in st.session_state:
+    st.session_state.selected_grade = "1"
+if 'selected_class' not in st.session_state:
+    st.session_state.selected_class = "1"
 
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
@@ -89,10 +90,11 @@ with tab2:
 with tab3:
     st.markdown("## 오늘 시간표")
 
-    grade = st.selectbox("학년", ["1", "2", "3"], index=["1", "2", "3"].index(selected_grade))
-    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=[str(i) for i in range(1, 10)].index(selected_class))
+    grade = st.selectbox("학년", ["1", "2", "3"], index=int(st.session_state.selected_grade) - 1)
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(st.session_state.selected_class) - 1)
 
-    st.experimental_set_query_params(grade=grade, class_nm=class_nm)
+    st.session_state.selected_grade = grade
+    st.session_state.selected_class = class_nm
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
