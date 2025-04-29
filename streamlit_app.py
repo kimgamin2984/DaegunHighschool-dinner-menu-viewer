@@ -23,7 +23,7 @@ SD_SCHUL_CODE = '7240082'
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
 with tab1:
-    st.markdown("## 오늘 중식 메뉴")
+    st.markdown("## 중식 식단")
     url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
     params = {
         'KEY': API_KEY,
@@ -44,7 +44,7 @@ with tab1:
         st.exception(e)
 
 with tab2:
-    st.markdown("## 오늘 석식 메뉴")
+    st.markdown("## 석식 식단")
     if not os.path.exists(filename):
         st.error(f"오늘은 급식 정보가 없습니다.")
     else:
@@ -80,7 +80,7 @@ with tab2:
             st.exception(e)
 
 with tab3:
-    st.markdown("## 오늘 시간표")
+    st.markdown("## 시간표")
 
     grade = st.selectbox("학년", ["1", "2", "3"], index=0)
     class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=0)
