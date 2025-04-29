@@ -3,4 +3,3 @@ requests
 pymupdf
 pytz
 python-dotenv
-streamlit-cookies-manager
