@@ -41,7 +41,7 @@ with tab1:
         for item in cleaned.strip().split('\n'):
             st.markdown(f"- {item.strip()}")
     except Exception as e:
-        st.error("오늘은 급식 정보가 없습니다.")
+        st.error("오늘의 급식 정보가 없습니다.")
         st.exception(e)
 
 with tab2:
@@ -75,7 +75,7 @@ with tab2:
                 if found:
                     break
             if not found:
-                st.error(f"오늘은 급식 정보가 없습니다.")
+                st.error(f"오늘의 급식 정보가 없습니다.")
         except Exception as e:
             st.error("파싱 과정 중 오류가 발생했습니다.")
             st.exception(e)
