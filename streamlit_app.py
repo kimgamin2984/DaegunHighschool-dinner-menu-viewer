@@ -6,11 +6,6 @@ import os
 import requests
 from pytz import timezone
 from dotenv import load_dotenv
-from streamlit_cookies_manager import EncryptedCookieManager
-
-cookies = EncryptedCookieManager(prefix="daegun", password="some_secure_password")
-if not cookies.ready():
-    st.stop()
 
 today = datetime.now(timezone('Asia/Seoul'))
 month = today.month
@@ -89,16 +84,8 @@ with tab2:
 
 with tab3:
     st.markdown("## 오늘 시간표")
-    
-    grade_index = int(cookies.get("selected_grade") or 1) - 1
-    class_index = int(cookies.get("selected_class") or 1) - 1
-    
-    grade = st.selectbox("학년", ["1", "2", "3"], index=grade_index)
-    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=class_index)
-    
-    cookies.set_cookie("selected_grade", grade)
-    cookies.set_cookie("selected_class", class_nm)
-    cookies.save()
+    grade = st.selectbox("학년", ["1", "2", "3"])
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)])
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
