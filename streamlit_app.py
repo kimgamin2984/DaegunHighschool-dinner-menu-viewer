@@ -98,6 +98,7 @@ with tab3:
 
     cookies.set("selected_grade", grade)
     cookies.set("selected_class", class_nm)
+    cookies.save()
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
