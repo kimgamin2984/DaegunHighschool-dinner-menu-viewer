@@ -65,9 +65,9 @@ with tab2:
                                     next_row = data[next_row_idx]
                                     if len(next_row) > col_idx:
                                         content = next_row[col_idx]
-                                        if content.strip().startswith("에너지"):
-                                            raise ValueError(f"{date_str} 석식 식단이 없습니다.")
                                         menu_items = content.strip().split("\n")
+                                        if menu_items == ["에너지"]:
+                                            raise ValueError(f"{date_str} 석식 식단이 없습니다.")
                                         for item in menu_items:
                                             st.markdown(f"- {item.strip()}")
                                         found = True
