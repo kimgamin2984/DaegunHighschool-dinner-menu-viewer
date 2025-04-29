@@ -43,13 +43,13 @@ with tab1:
         for item in cleaned.strip().split('\n'):
             st.markdown(f"- {item.strip()}")
     except Exception as e:
-        st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
+        st.error("오늘은 급식 정보가 없습니다.")
         st.exception(e)
 
 with tab2:
     st.markdown("## 오늘 석식 메뉴")
     if not os.path.exists(filename):
-        st.error(f"{month}월 석식 PDF 파일이 존재하지 않습니다.")
+        st.error(f"오늘은 급식 정보가 없습니다.")
     else:
         try:
             doc = fitz.open(filename)
@@ -77,9 +77,9 @@ with tab2:
                 if found:
                     break
             if not found:
-                st.warning(f"{date_str} 석식 메뉴를 찾을 수 없습니다.")
+                st.error(f"오늘은 급식 정보가 없습니다.")
         except Exception as e:
-            st.error("석식 PDF를 파싱하는 중 오류가 발생했어요.")
+            st.error("파싱 과정 중 오류가 발생했습니다.")
             st.exception(e)
 
 with tab3:
@@ -106,5 +106,5 @@ with tab3:
         for period in timetable:
             st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
     except Exception as e:
-        st.error("시간표 정보를 불러올 수 없어요.")
+        st.error("시간표 정보를 불러올 수 없습니다.")
         st.exception(e)
