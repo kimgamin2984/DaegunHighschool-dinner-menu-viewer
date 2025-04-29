@@ -65,7 +65,7 @@ with tab2:
                                     next_row = data[next_row_idx]
                                     if len(next_row) > col_idx:
                                         content = next_row[col_idx]
-                                        if not content or not content.strip():
+                                        if content.strip().startswith("에너지"):
                                             raise ValueError(f"{date_str} 석식 식단이 없습니다.")
                                         menu_items = content.strip().split("\n")
                                         for item in menu_items:
@@ -83,7 +83,6 @@ with tab2:
         except Exception as e:
             st.error("파싱 과정 중 오류가 발생했습니다.")
             st.exception(e)
-
 with tab3:
     st.markdown("## 시간표")
 
