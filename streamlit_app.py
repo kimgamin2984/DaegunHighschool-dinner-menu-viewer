@@ -97,6 +97,7 @@ with tab3:
     class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=class_index)
 
     cookies.set("selected_grade", grade)
+    cookies.save()
     cookies.set("selected_class", class_nm)
     cookies.save()
 
