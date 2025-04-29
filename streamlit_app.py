@@ -6,7 +6,6 @@ import os
 import requests
 from pytz import timezone
 from dotenv import load_dotenv
-from streamlit_js_eval import get_cookie, set_cookie
 
 today = datetime.now(timezone('Asia/Seoul'))
 month = today.month
@@ -24,6 +23,13 @@ SD_SCHUL_CODE = '7240082'
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 
+# 학년과 반에 대한 초기값을 설정 (session_state)
+if 'selected_grade' not in st.session_state:
+    st.session_state.selected_grade = "1"
+if 'selected_class' not in st.session_state:
+    st.session_state.selected_class = "1"
+
+# 탭 UI
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
 with tab1:
@@ -86,17 +92,15 @@ with tab2:
 with tab3:
     st.markdown("## 오늘 시간표")
 
-    selected_grade = get_cookie("selected_grade") or "1"
-    selected_class = get_cookie("selected_class") or "1"
+    # 학년, 반 선택
+    grade = st.selectbox("학년", ["1", "2", "3"], index=int(st.session_state.selected_grade) - 1)
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(st.session_state.selected_class) - 1)
 
-    grade = st.selectbox("학년", ["1", "2", "3"], index=int(selected_grade) - 1)
-    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(selected_class) - 1)
+    # session_state에 저장
+    st.session_state.selected_grade = grade
+    st.session_state.selected_class = class_nm
 
-    # 쿠키 설정 후 새로 고침
-    set_cookie("selected_grade", grade)
-    set_cookie("selected_class", class_nm)
-    st.experimental_rerun()
-
+    # 시간표 API 호출
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
         'KEY': API_KEY,
