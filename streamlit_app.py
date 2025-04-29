@@ -46,7 +46,7 @@ with tab1:
 with tab2:
     st.markdown("## 석식 식단")
     if not os.path.exists(filename):
-        st.error(f"오늘은 급식 정보가 없습니다.")
+        st.error("오늘은 급식 정보가 없습니다.")
     else:
         try:
             doc = fitz.open(filename)
@@ -57,12 +57,16 @@ with tab2:
                     continue
                 for table in tables:
                     data = table.extract()
-                    for row in data:
-                        for i, cell in enumerate(row):
+                    for row_idx, row in enumerate(data):
+                        for col_idx, cell in enumerate(row):
                             if cell and date_str in cell:
-                                for next_row in data[data.index(row)+1:]:
-                                    if len(next_row) > i and next_row[i]:
-                                        for item in next_row[i].strip().split("\n"):
+                                for next_row in data[row_idx + 1:]:
+                                    if len(next_row) > col_idx:
+                                        content = next_row[col_idx]
+                                        if not content.strip():
+                                            raise ValueError(f"{date_str} 석식 식단이 없습니다.")
+                                        menu_items = content.strip().split("\n")
+                                        for item in menu_items:
                                             st.markdown(f"- {item.strip()}")
                                         found = True
                                         break
@@ -74,7 +78,7 @@ with tab2:
                 if found:
                     break
             if not found:
-                st.error(f"오늘의 급식 정보가 없습니다.")
+                st.error("오늘의 급식 정보가 없습니다.")
         except Exception as e:
             st.error("파싱 과정 중 오류가 발생했습니다.")
             st.exception(e)
