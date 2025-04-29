@@ -23,13 +23,11 @@ SD_SCHUL_CODE = '7240082'
 
 headers = {'User-Agent': 'Mozilla/5.0'}
 
-# 학년과 반에 대한 초기값을 설정 (session_state)
 if 'selected_grade' not in st.session_state:
     st.session_state.selected_grade = "1"
 if 'selected_class' not in st.session_state:
     st.session_state.selected_class = "1"
 
-# 탭 UI
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
 with tab1:
@@ -92,15 +90,12 @@ with tab2:
 with tab3:
     st.markdown("## 오늘 시간표")
 
-    # 학년, 반 선택
     grade = st.selectbox("학년", ["1", "2", "3"], index=int(st.session_state.selected_grade) - 1)
     class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(st.session_state.selected_class) - 1)
 
-    # session_state에 저장
     st.session_state.selected_grade = grade
     st.session_state.selected_class = class_nm
 
-    # 시간표 API 호출
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
         'KEY': API_KEY,
