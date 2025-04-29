@@ -69,8 +69,8 @@ with tab2:
                                         st.write(menu_items)
                                         # if menu_items == ["에너지"]:
                                         #     raise ValueError(f"{date_str} 석식 식단이 없습니다.")
-                                        # for item in menu_items:
-                                        #     st.markdown(f"- {item.strip()}")
+                                        for item in menu_items:
+                                            st.markdown(f"- {item.strip()}")
                                         found = True
                                 break
                         if found:
