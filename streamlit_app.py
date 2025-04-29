@@ -98,7 +98,7 @@ with tab3:
     }
 
     try:
-        res = requests.get(url, params=params, stream=True, headers=headers, timeout=15)
+        res = requests.get(url, params=params, stream=True, timeout=15)
         raw = res.raw.read(decode_content=True)
         data = json.loads(raw)
         timetable = data['hisTimetable'][1]['row']
