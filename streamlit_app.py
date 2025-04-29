@@ -7,7 +7,7 @@ import requests
 from pytz import timezone
 from dotenv import load_dotenv
 
-today = st.date_input("날짜를 선택하세요", value=datetime.now(timezone('Asia/Seoul')))
+today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
 month = today.month
 day = today.day
 date_str = f"{month:02}월 {day:02}일"
