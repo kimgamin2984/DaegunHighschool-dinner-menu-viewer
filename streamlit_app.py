@@ -90,18 +90,20 @@ with tab2:
 with tab3:
     st.markdown("## 오늘 시간표")
 
-    grade = st.selectbox(
-        "학년", 
-        ["1", "2", "3"], 
-        index=int(st.session_state.selected_grade) - 1, 
+    st.selectbox(
+        "학년",
+        ["1", "2", "3"],
         key="selected_grade"
     )
-    class_nm = st.selectbox(
-        "반", 
-        [str(i) for i in range(1, 10)], 
-        index=int(st.session_state.selected_class) - 1, 
+
+    st.selectbox(
+        "반",
+        [str(i) for i in range(1, 10)],
         key="selected_class"
     )
+
+    grade = st.session_state.selected_grade
+    class_nm = st.session_state.selected_class
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
@@ -109,8 +111,8 @@ with tab3:
         'Type': 'json',
         'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
         'SD_SCHUL_CODE': SD_SCHUL_CODE,
-        'GRADE': st.session_state.selected_grade,
-        'CLASS_NM': st.session_state.selected_class,
+        'GRADE': grade,
+        'CLASS_NM': class_nm,
         'ALL_TI_YMD': today_str
     }
 
