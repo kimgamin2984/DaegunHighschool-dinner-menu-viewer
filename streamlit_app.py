@@ -111,4 +111,3 @@ with tab3:
             st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
     except Exception as e:
         st.error("시간표 정보를 불러올 수 없습니다.")
-        st.exception(e)
