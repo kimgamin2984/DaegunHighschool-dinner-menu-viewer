@@ -90,8 +90,8 @@ with tab2:
 with tab3:
     st.markdown("## 오늘 시간표")
 
-    grade = st.selectbox("학년", ["1", "2", "3"], index=int(st.session_state.selected_grade) - 1)
-    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(st.session_state.selected_class) - 1)
+    grade = st.selectbox("학년", ["1", "2", "3"], index=int(st.session_state.get('selected_grade', "1")) - 1, key="grade_selectbox")
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=int(st.session_state.get('selected_class', "1")) - 1, key="class_selectbox")
 
     st.session_state.selected_grade = grade
     st.session_state.selected_class = class_nm
