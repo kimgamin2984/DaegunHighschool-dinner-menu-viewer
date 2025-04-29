@@ -90,20 +90,19 @@ with tab2:
 with tab3:
     st.markdown("## 오늘 시간표")
 
-    st.selectbox(
-        "학년",
-        ["1", "2", "3"],
-        key="selected_grade"
-    )
+    grade = st.selectbox(
+    "학년",
+    ["1", "2", "3"],
+    index=["1", "2", "3"].index(st.session_state.selected_grade) if 'selected_grade' in st.session_state else 0,
+    key="selected_grade"
+)
 
-    st.selectbox(
-        "반",
-        [str(i) for i in range(1, 10)],
-        key="selected_class"
-    )
-
-    grade = st.session_state.selected_grade
-    class_nm = st.session_state.selected_class
+class_nm = st.selectbox(
+    "반",
+    [str(i) for i in range(1, 10)],
+    index=[str(i) for i in range(1, 10)].index(st.session_state.selected_class) if 'selected_class' in st.session_state else 0,
+    key="selected_class"
+)
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
