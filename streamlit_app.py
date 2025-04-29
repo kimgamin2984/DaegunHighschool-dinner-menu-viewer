@@ -21,8 +21,6 @@ API_KEY = os.getenv("NEIS_KEY") or st.secrets["NEIS_KEY"]
 ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
 
-headers = {'User-Agent': 'Mozilla/5.0'}
-
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
 with tab1:
@@ -36,7 +34,7 @@ with tab1:
         'MLSV_YMD': today_str
     }
     try:
-        res = requests.get(url, params=params, timeout=30, headers=headers)
+        res = requests.get(url, params=params, timeout=30)
         data = res.json()
         meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
         cleaned = meals.replace('<br/>', '\n')
