@@ -64,7 +64,8 @@ with tab2:
                                     next_row = data[next_row_idx]
                                     if len(next_row) > col_idx:
                                         content = next_row[col_idx]
-                                        menu_items = content.strip().split("\n").pop()
+                                        menu_items = content.strip().split("\n")
+                                        menu_items.pop()
                                         if menu_items == [""] or menu_items == [",,,,,"]:
                                              st.error(f"석식 정보가 없습니다.")
                                         else:
