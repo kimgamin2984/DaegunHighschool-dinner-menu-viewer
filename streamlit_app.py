@@ -41,7 +41,6 @@ with tab1:
             st.markdown(f"- {item.strip()}")
     except Exception as e:
         st.error("오늘의 급식 정보가 없습니다.")
-        st.exception(e)
 
 with tab2:
     st.markdown("## 석식 식단")
