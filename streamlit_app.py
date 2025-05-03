@@ -40,12 +40,12 @@ with tab1:
         for item in cleaned.strip().split('\n'):
             st.markdown(f"- {item.strip()}")
     except Exception:
-        st.error("급식 정보가 없습니다.")
+        st.error("중식 정보가 없습니다.")
 
 with tab2:
     st.markdown("## 석식 식단")
     if not os.path.exists(filename):
-        st.error("중식 정보가 없습니다.")
+        st.error("석석식 정보가 없습니다.")
     else:
         try:
             doc = fitz.open(filename)
