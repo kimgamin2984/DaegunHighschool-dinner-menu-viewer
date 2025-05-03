@@ -7,26 +7,23 @@ import requests
 from pytz import timezone
 from dotenv import load_dotenv
 
-today = datetime.now(timezone('Asia/Seoul'))
+today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
 month = today.month
 day = today.day
 date_str = f"{month:02}월 {day:02}일"
 today_str = today.strftime("%Y%m%d")
 
 filename = "Dinner_Menu.pdf"
-st.text(f"조회일: {date_str}")
 
 load_dotenv()
-API_KEY = os.getenv("NEIS_KEY")
+API_KEY = os.getenv("NEIS_KEY") or st.secrets["NEIS_KEY"]
 ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
-
-headers = {'User-Agent': 'Mozilla/5.0'}
 
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
 with tab1:
-    st.markdown("## 오늘 중식 메뉴")
+    st.markdown("## 중식 식단")
     url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
     params = {
         'KEY': API_KEY,
@@ -36,20 +33,19 @@ with tab1:
         'MLSV_YMD': today_str
     }
     try:
-        res = requests.get(url, params=params, timeout=30, headers=headers)
+        res = requests.get(url, params=params, timeout=30)
         data = res.json()
         meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
         cleaned = meals.replace('<br/>', '\n')
         for item in cleaned.strip().split('\n'):
             st.markdown(f"- {item.strip()}")
-    except Exception as e:
-        st.error("오늘은 급식 정보가 없거나 오류가 발생했어요.")
-        st.exception(e)
+    except Exception:
+        st.error("중식 정보가 없습니다.")
 
 with tab2:
-    st.markdown("## 오늘 석식 메뉴")
+    st.markdown("## 석식 식단")
     if not os.path.exists(filename):
-        st.error(f"{month}월 석식 PDF 파일이 존재하지 않습니다.")
+        st.error("석식 정보가 없습니다. 개발자에게 문의하세요.")
     else:
         try:
             doc = fitz.open(filename)
@@ -60,15 +56,21 @@ with tab2:
                     continue
                 for table in tables:
                     data = table.extract()
-                    for row in data:
-                        for i, cell in enumerate(row):
+                    for row_idx, row in enumerate(data):
+                        for col_idx, cell in enumerate(row):
                             if cell and date_str in cell:
-                                for next_row in data[data.index(row)+1:]:
-                                    if len(next_row) > i and next_row[i]:
-                                        for item in next_row[i].strip().split("\n"):
-                                            st.markdown(f"- {item.strip()}")
+                                next_row_idx = row_idx + 1
+                                if next_row_idx < len(data):
+                                    next_row = data[next_row_idx]
+                                    if len(next_row) > col_idx:
+                                        content = next_row[col_idx]
+                                        menu_items = content.strip().split("\n")
+                                        if menu_items == [""]:
+                                             st.error(f"석식 정보가 없습니다.")
+                                        else:
+                                            for item in menu_items:
+                                                st.markdown(f"- {item.strip()}")
                                         found = True
-                                        break
                                 break
                         if found:
                             break
@@ -77,15 +79,16 @@ with tab2:
                 if found:
                     break
             if not found:
-                st.warning(f"{date_str} 석식 메뉴를 찾을 수 없습니다.")
+                st.error("석식 정보가 없습니다.")
         except Exception as e:
-            st.error("석식 PDF를 파싱하는 중 오류가 발생했어요.")
+            st.error("파싱 과정 중 오류가 발생했습니다.")
             st.exception(e)
-
+            
 with tab3:
-    st.markdown("## 오늘 시간표")
-    grade = st.selectbox("학년", ["1", "2", "3"])
-    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)])
+    st.markdown("## 시간표")
+
+    grade = st.selectbox("학년", ["1", "2", "3"], index=0)
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=0)
 
     url = 'https://open.neis.go.kr/hub/hisTimetable'
     params = {
@@ -99,12 +102,11 @@ with tab3:
     }
 
     try:
-        res = requests.get(url, params=params, stream=True, headers=headers, timeout=15)
+        res = requests.get(url, params=params, stream=True, timeout=15)
         raw = res.raw.read(decode_content=True)
         data = json.loads(raw)
         timetable = data['hisTimetable'][1]['row']
         for period in timetable:
             st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
     except Exception as e:
-        st.error("시간표 정보를 불러올 수 없어요.")
-        st.exception(e)
+        st.error("시간표 정보를 불러올 수 없습니다.")
