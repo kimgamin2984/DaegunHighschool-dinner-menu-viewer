@@ -15,8 +15,7 @@ day = today.day
 date_str = f"{month:02}월 {day:02}일"
 today_str = today.strftime("%Y%m%d")
 
-filename = "Dinner_Menu.pdf"
-
+filename = f"{today.year}_{today.month}_Dinner_Menu.pdf"
 load_dotenv()
 API_KEY = os.getenv("NEIS_KEY") or st.secrets["NEIS_KEY"]
 ATPT_OFCDC_SC_CODE = 'D10'
