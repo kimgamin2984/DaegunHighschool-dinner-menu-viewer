@@ -45,46 +45,43 @@ with tab1:
 
 with tab2:
     st.markdown("## 석식 식단")
-    if not os.path.exists(filename):
-        st.error("석식 정보가 없습니다. 개발자에게 문의하세요.")
-    else:
-        try:
-            doc = fitz.open(filename)
-            found = False
-            for page in doc:
-                tables = page.find_tables()
-                if not tables:
-                    continue
-                for table in tables:
-                    data = table.extract()
-                    for row_idx, row in enumerate(data):
-                        for col_idx, cell in enumerate(row):
-                            if cell and date_str in cell:
-                                next_row_idx = row_idx + 1
-                                if next_row_idx < len(data):
-                                    next_row = data[next_row_idx]
-                                    if len(next_row) > col_idx:
-                                        content = next_row[col_idx]
-                                        menu_items = content.strip().split("\n")
-                                        menu_items.pop()
-                                        if menu_items == [""] or menu_items == [",,,,,"]:
-                                             st.error(f"석식 정보가 없습니다.")
-                                        else:
-                                            for item in menu_items:
-                                                st.markdown(f"- {item.strip()}")
-                                        found = True
-                                break
-                        if found:
+    try:
+        doc = fitz.open(filename)
+        found = False
+        for page in doc:
+            tables = page.find_tables()
+            if not tables:
+                continue
+            for table in tables:
+                data = table.extract()
+                for row_idx, row in enumerate(data):
+                    for col_idx, cell in enumerate(row):
+                        if cell and date_str in cell:
+                            next_row_idx = row_idx + 1
+                            if next_row_idx < len(data):
+                                next_row = data[next_row_idx]
+                                if len(next_row) > col_idx:
+                                    content = next_row[col_idx]
+                                    menu_items = content.strip().split("\n")
+                                    menu_items.pop()
+                                    if menu_items == [""] or menu_items == [",,,,,"]:
+                                            st.error(f"석식 정보가 없습니다.")
+                                    else:
+                                        for item in menu_items:
+                                            st.markdown(f"- {item.strip()}")
+                                    found = True
                             break
                     if found:
                         break
                 if found:
                     break
-            if not found:
-                st.error("석식 정보가 없습니다.")
-        except Exception as e:
-            st.error("파싱 과정 중 오류가 발생했습니다.")
-            st.exception(e)
+            if found:
+                break
+        if not found:
+            st.error("석식 정보가 없습니다.")
+    except Exception as e:
+        st.error("파싱 과정 중 오류가 발생했습니다.")
+        st.exception(e)
             
 with tab3:
     st.markdown("## 시간표")
