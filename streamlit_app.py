@@ -57,19 +57,17 @@ with tab2:
                 for row_idx, row in enumerate(data):
                     for col_idx, cell in enumerate(row):
                         if cell and date_str in cell:
-                            next_row_idx = row_idx + 1
-                            if next_row_idx < len(data):
-                                next_row = data[next_row_idx]
+                            for next_row in data[row_idx + 1:]:
                                 if len(next_row) > col_idx:
                                     content = next_row[col_idx]
-                                    menu_items = content.strip().split("\n")
-                                    menu_items.pop()
-                                    if menu_items == [""] or menu_items == [",,,,,"]:
-                                            st.error(f"석식 정보가 없습니다.")
-                                    else:
+                                    if content and not content.strip().startswith("에너지"):
+                                        menu_items = content.strip().split("\n")
                                         for item in menu_items:
                                             st.markdown(f"- {item.strip()}")
-                                    found = True
+                                        found = True
+                                    else:
+                                        st.error("석식 정보가 없습니다.")
+                                    break
                             break
                     if found:
                         break
@@ -81,8 +79,7 @@ with tab2:
             st.error("석식 정보가 없습니다.")
     except Exception as e:
         st.error("파싱 과정 중 오류가 발생했습니다.")
-        st.exception(e)
-            
+        st.exception(e)            
 with tab3:
     st.markdown("## 시간표")
 
