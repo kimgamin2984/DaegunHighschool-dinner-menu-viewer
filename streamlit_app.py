@@ -40,7 +40,7 @@ with tab1:
         cleaned = meals.replace('<br/>', '\n')
         for item in cleaned.strip().split('\n'):
             st.markdown(f"- {item.strip()}")
-    except Exception:
+    except:
         st.error("중식 정보가 없습니다.")
 
 with tab2:
@@ -77,9 +77,9 @@ with tab2:
                 break
         if not found:
             st.error("석식 정보가 없습니다.")
-    except Exception as e:
+    except:
         st.error("파싱 과정 중 오류가 발생했습니다.")
-        st.exception(e)            
+                    
 with tab3:
     st.markdown("## 시간표")
 
@@ -104,5 +104,5 @@ with tab3:
         timetable = data['hisTimetable'][1]['row']
         for period in timetable:
             st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
-    except Exception as e:
+    except:
         st.error("시간표 정보를 불러올 수 없습니다.")
