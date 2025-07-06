@@ -64,18 +64,19 @@ with tab2:
                                 if len(next_row) > col_idx:
                                     content = next_row[col_idx]
                                     menu_items = content.strip().split("\n")
-                                    filtered = []
+                                    cleaned_items = []
                                     for item in menu_items:
-                                        item = item.strip()
-                                        cleaned = re.sub(r"\s+\d[\d.]*$", "", item)
-                                        if not re.fullmatch(r"\d[\d.]*", cleaned):
-                                            filtered.append(cleaned)
-                                    if filtered:
-                                        for item in filtered:
-                                            st.markdown(f"- {item}")
+                                        parts = [p.strip() for p in item.split("/") if p.strip()]
+                                        for part in parts:
+                                            cleaned = re.sub(r"[^\uAC00-\uD7A3\s]", "", part)
+                                            if cleaned and not cleaned.isdigit():
+                                                cleaned_items.append(cleaned)
+                                    if cleaned_items:
+                                        for i in cleaned_items:
+                                            st.markdown(f"- {i}")
+                                        found = True
                                     else:
                                         st.error("석식 정보가 없습니다.")
-                                    found = True
                             break
                     if found:
                         break
@@ -85,9 +86,8 @@ with tab2:
                 break
         if not found:
             st.error("석식 정보가 없습니다.")
-    except Exception as e:
+    except:
         st.error("파싱 과정 중 오류가 발생했습니다.")
-        st.error(e)
                     
 with tab3:
     st.markdown("## 시간표")
