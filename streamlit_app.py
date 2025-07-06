@@ -86,6 +86,7 @@ with tab2:
             st.error("석식 정보가 없습니다.")
     except Exception as e:
         st.error("파싱 과정 중 오류가 발생했습니다.")
+        st.error(e)
                     
 with tab3:
     st.markdown("## 시간표")
