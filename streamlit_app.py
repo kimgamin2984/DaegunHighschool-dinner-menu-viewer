@@ -57,17 +57,24 @@ with tab2:
                 for row_idx, row in enumerate(data):
                     for col_idx, cell in enumerate(row):
                         if cell and date_str in cell:
-                            for next_row in data[row_idx + 1:]:
+                            next_row_idx = row_idx + 1
+                            if next_row_idx < len(data):
+                                next_row = data[next_row_idx]
                                 if len(next_row) > col_idx:
                                     content = next_row[col_idx]
-                                    if content and not content.strip().startswith("에너지"):
-                                        menu_items = content.strip().split("\n")
-                                        for item in menu_items:
-                                            st.markdown(f"- {item.strip()}")
-                                        found = True
+                                    menu_items = content.strip().split("\n")
+                                    filtered = []
+                                    for item in menu_items:
+                                        item = item.strip()
+                                        cleaned = re.sub(r"\s+\d[\d.]*$", "", item)
+                                        if not re.fullmatch(r"\d[\d.]*", cleaned):
+                                            filtered.append(cleaned)
+                                    if filtered:
+                                        for item in filtered:
+                                            st.markdown(f"- {item}")
                                     else:
                                         st.error("석식 정보가 없습니다.")
-                                    break
+                                    found = True
                             break
                     if found:
                         break
