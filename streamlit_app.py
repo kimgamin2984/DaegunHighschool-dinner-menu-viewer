@@ -84,7 +84,7 @@ with tab2:
                 break
         if not found:
             st.error("석식 정보가 없습니다.")
-    except:
+    except Exception as e:
         st.error("파싱 과정 중 오류가 발생했습니다.")
                     
 with tab3:
