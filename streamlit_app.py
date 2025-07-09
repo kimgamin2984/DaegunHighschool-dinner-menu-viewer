@@ -1,3 +1,4 @@
+import re
 import json
 import streamlit as st
 import fitz
@@ -57,17 +58,25 @@ with tab2:
                 for row_idx, row in enumerate(data):
                     for col_idx, cell in enumerate(row):
                         if cell and date_str in cell:
-                            for next_row in data[row_idx + 1:]:
+                            next_row_idx = row_idx + 1
+                            if next_row_idx < len(data):
+                                next_row = data[next_row_idx]
                                 if len(next_row) > col_idx:
                                     content = next_row[col_idx]
-                                    if content and not content.strip().startswith("에너지"):
-                                        menu_items = content.strip().split("\n")
-                                        for item in menu_items:
-                                            st.markdown(f"- {item.strip()}")
+                                    menu_items = content.strip().split("\n")
+                                    cleaned_items = []
+                                    for item in menu_items:
+                                        parts = [p.strip() for p in item.split("/") if p.strip()]
+                                        for part in parts:
+                                            cleaned = re.sub(r"[^\uAC00-\uD7A3\s]", "", part)
+                                            if cleaned and not cleaned.isdigit():
+                                                cleaned_items.append(cleaned)
+                                    if cleaned_items:
+                                        for i in cleaned_items:
+                                            st.markdown(f"- {i}")
                                         found = True
                                     else:
                                         st.error("석식 정보가 없습니다.")
-                                    break
                             break
                     if found:
                         break
