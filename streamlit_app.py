@@ -63,19 +63,23 @@ with tab2:
                                 next_row = data[next_row_idx]
                                 if len(next_row) > col_idx:
                                     content = next_row[col_idx]
-                                    menu_items = content.strip().split("\n")
+                                    lines = content.strip().split("\n")
                                     cleaned_items = []
-                                    for item in menu_items:
-                                        parts = [p.strip() for p in item.split("/") if p.strip()]
+                                    for line in lines:
+                                        parts = [p.strip() for p in line.split("/") if p.strip()]
                                         for part in parts:
-                                            name = re.sub(r"[0-9.]", "", part).strip()
-                                            nums = re.findall(r"\d+", part)
-                                            if name and not name.isdigit():
-                                                if nums:
-                                                    label = f"{name} ({'.'.join(nums)})"
-                                                else:
-                                                    label = name
-                                                cleaned_items.append(label)
+                                            if re.fullmatch(r"[0-9.]+", part):
+                                                if cleaned_items:
+                                                    cleaned_items[-1] += f" ({part})"
+                                            else:
+                                                name = re.sub(r"[0-9.]", "", part).strip()
+                                                nums = re.findall(r"[0-9.]+", part)
+                                                if name:
+                                                    if nums:
+                                                        label = f"{name} ({'.'.join(nums)})"
+                                                    else:
+                                                        label = name
+                                                    cleaned_items.append(label)
                                     if cleaned_items:
                                         for i in cleaned_items:
                                             st.markdown(f"- {i}")
