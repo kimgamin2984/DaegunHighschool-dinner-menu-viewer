@@ -68,9 +68,14 @@ with tab2:
                                     for item in menu_items:
                                         parts = [p.strip() for p in item.split("/") if p.strip()]
                                         for part in parts:
-                                            cleaned = re.sub(r"[^\uAC00-\uD7A3\s]", "", part)
-                                            if cleaned and not cleaned.isdigit():
-                                                cleaned_items.append(cleaned)
+                                            name = re.sub(r"[0-9.]", "", part).strip()
+                                            nums = re.findall(r"\d+", part)
+                                            if name and not name.isdigit():
+                                                if nums:
+                                                    label = f"{name} ({'.'.join(nums)})"
+                                                else:
+                                                    label = name
+                                                cleaned_items.append(label)
                                     if cleaned_items:
                                         for i in cleaned_items:
                                             st.markdown(f"- {i}")
