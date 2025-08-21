@@ -46,7 +46,9 @@ with tab1:
 
 with tab2:
     st.markdown("## 석식 식단")
-    if os.path.exists(filename):
+    if not os.path.exists(filename):
+        st.error("석식 파일을 찾을 수 없습니다.")
+    else:
         try:
             doc = fitz.open(filename)
             found = False
@@ -69,18 +71,18 @@ with tab2:
                                         for line in lines:
                                             parts = [p.strip() for p in line.split("/") if p.strip()]
                                             for part in parts:
-                                                if re.fullmatch(r"[0-9.]+", part):
-                                                    if cleaned_items:
-                                                        cleaned_items[-1] += f" ({part})"
-                                                else:
-                                                    name = re.sub(r"[0-9.]", "", part).strip()
-                                                    nums = re.findall(r"[0-9.]+", part)
+                                                m = re.search(r"(\d+(?:\.\d+)*)$", part)
+                                                if m:
+                                                    nums = m.group(1)
+                                                    name = part[: -len(nums)].strip()
                                                     if name:
-                                                        if nums:
-                                                            label = f"{name} ({'.'.join(nums)})"
-                                                        else:
-                                                            label = name
-                                                        cleaned_items.append(label)
+                                                        cleaned_items.append(f"{name} ({nums})")
+                                                    else:
+                                                        if cleaned_items:
+                                                            cleaned_items[-1] += f" ({nums})"
+                                                else:
+                                                    if part:
+                                                        cleaned_items.append(part)
                                         if cleaned_items:
                                             for i in cleaned_items:
                                                 st.markdown(f"- {i}")
@@ -98,8 +100,6 @@ with tab2:
                 st.error("석식 정보가 없습니다.")
         except:
             st.error("파싱 과정 중 오류가 발생했습니다.")
-    else:
-        st.error("석식 정보가 없습니다.")
 
 with tab3:
     st.markdown("## 시간표")
