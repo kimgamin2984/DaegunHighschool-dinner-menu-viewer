@@ -1,7 +1,5 @@
-import re
 import json
 import streamlit as st
-import fitz
 from datetime import datetime
 import os
 import requests
@@ -46,60 +44,21 @@ with tab1:
 
 with tab2:
     st.markdown("## 석식 식단")
-    if not os.path.exists(filename):
-        st.error("석식 파일을 찾을 수 없습니다.")
-    else:
-        try:
-            doc = fitz.open(filename)
-            found = False
-            for page in doc:
-                tables = page.find_tables()
-                if not tables:
-                    continue
-                for table in tables:
-                    data = table.extract()
-                    for row_idx, row in enumerate(data):
-                        for col_idx, cell in enumerate(row):
-                            if cell and date_str in cell:
-                                next_row_idx = row_idx + 1
-                                if next_row_idx < len(data):
-                                    next_row = data[next_row_idx]
-                                    if len(next_row) > col_idx:
-                                        content = next_row[col_idx]
-                                        lines = content.strip().split("\n")
-                                        cleaned_items = []
-                                        for line in lines:
-                                            parts = [p.strip() for p in line.split("/") if p.strip()]
-                                            for part in parts:
-                                                m = re.search(r"(\d+(?:\.\d+)*)$", part)
-                                                if m:
-                                                    nums = m.group(1)
-                                                    name = part[: -len(nums)].strip()
-                                                    if name:
-                                                        cleaned_items.append(f"{name} ({nums})")
-                                                    else:
-                                                        if cleaned_items:
-                                                            cleaned_items[-1] += f" ({nums})"
-                                                else:
-                                                    if part:
-                                                        cleaned_items.append(part)
-                                        if cleaned_items:
-                                            for i in cleaned_items:
-                                                st.markdown(f"- {i}")
-                                            found = True
-                                        else:
-                                            st.error("석식 정보가 없습니다.")
-                                break
-                        if found:
-                            break
-                    if found:
-                        break
-                if found:
-                    break
-            if not found:
-                st.error("석식 정보가 없습니다.")
-        except:
-            st.error("파싱 과정 중 오류가 발생했습니다.")
+    try:
+        import sqlite3
+        conn = sqlite3.connect("menu.db")
+        cur = conn.cursor()
+        cur.execute("SELECT item FROM dinner WHERE date=?", (today_str,))
+        rows = cur.fetchall()
+        conn.close()
+
+        if rows:
+            for row in rows:
+                st.markdown(f"- {row[0]}")
+        else:
+            st.error("석식 정보가 없습니다.")
+    except:
+        st.error("DB 조회 과정 중 오류가 발생했습니다.")
 
 with tab3:
     st.markdown("## 시간표")
