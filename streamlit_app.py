@@ -46,19 +46,20 @@ with tab2:
     st.markdown("## 석식 식단")
     try:
         import sqlite3
-        conn = sqlite3.connect("menu.db")
+        conn = sqlite3.connect("dinner.db")
         cur = conn.cursor()
-        cur.execute("SELECT item FROM dinner WHERE date=?", (today_str,))
+        cur.execute("SELECT menu FROM dinner WHERE date=?", (today_str,))
         rows = cur.fetchall()
         conn.close()
 
         if rows:
-            for row in rows:
-                st.markdown(f"- {row[0]}")
+            for row in rows[0][0].split("\n"):
+                st.markdown(f"- {row}")
         else:
             st.error("석식 정보가 없습니다.")
-    except:
+    except Exception as e:
         st.error("DB 조회 과정 중 오류가 발생했습니다.")
+        st.error(e)
 
 with tab3:
     st.markdown("## 시간표")
