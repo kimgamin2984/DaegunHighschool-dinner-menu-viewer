@@ -57,9 +57,8 @@ with tab2:
                 st.markdown(f"- {row}")
         else:
             st.error("석식 정보가 없습니다.")
-    except Exception as e:
+    except:
         st.error("DB 조회 과정 중 오류가 발생했습니다.")
-        st.error(e)
 
 with tab3:
     st.markdown("## 시간표")
