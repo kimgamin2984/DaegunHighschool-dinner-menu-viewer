@@ -9,7 +9,6 @@ def parse_pdf(filename):
     if not os.path.exists(filename):
         print("석식 파일을 찾을 수 없습니다.")
         return result
-
     try:
         doc = fitz.open(filename)
         for page in doc:
@@ -20,7 +19,7 @@ def parse_pdf(filename):
                 data = table.extract()
                 for row_idx, row in enumerate(data):
                     for col_idx, cell in enumerate(row):
-                        if not cell:
+                        if not isinstance(cell, str) or not cell.strip():
                             continue
                         m = re.match(r"(\d{2})월\s*(\d{2})일", cell.strip())
                         if not m:
@@ -32,6 +31,8 @@ def parse_pdf(filename):
                             next_row = data[next_row_idx]
                             if len(next_row) > col_idx:
                                 content = next_row[col_idx]
+                                if not isinstance(content, str) or not content.strip():
+                                    continue
                                 lines = content.strip().split("\n")
                                 cleaned_items = []
                                 for line in lines:
@@ -55,7 +56,6 @@ def parse_pdf(filename):
     except Exception as e:
         print("파싱 오류:", e)
         return result
-
 
 def update_db(db_path, data):
     conn = sqlite3.connect(db_path)
