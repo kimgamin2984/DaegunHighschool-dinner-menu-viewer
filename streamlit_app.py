@@ -46,21 +46,19 @@ with tab1:
 
 with tab2:
     st.markdown("## 석식 식단")
+    url = 'https://daegundinnerapi.onrender.com/menu'
+    params = {
+        'date': today_str
+    }
     try:
-        import sqlite3
-        conn = sqlite3.connect("dinner.db")
-        cur = conn.cursor()
-        cur.execute("SELECT menu FROM dinner WHERE date=?", (today_str,))
-        rows = cur.fetchall()
-        conn.close()
-
-        if rows:
-            for row in rows[0][0].split("\n"):
-                st.markdown(f"- {row}")
-        else:
-            st.error("석식 정보가 없습니다.")
-    except:
-        st.error("DB 조회 과정 중 오류가 발생했습니다.")
+        res = requests.get(url, params=params, timeout=30)
+        data = res.json()
+        meals = data['menu']
+        for item in meals:
+            st.markdown(f"- {item}")
+    except Exception as e:
+        st.error("석식 정보가 없습니다.")
+        st.error(e)
 
     st.markdown('--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우유 ③메밀 ④땅콩 ⑤대두 ⑥밀 ⑦고등어 ⑧게 ⑨새우 ⑩돼지고기 ⑪복숭아 \n\n ⑫토마토 ⑬아황산염 ⑭호두 ⑮닭고기 ⑯쇠고기 ⑰오징어 ⑱조개류(전복, 홍합포함) ⑲잣')
 

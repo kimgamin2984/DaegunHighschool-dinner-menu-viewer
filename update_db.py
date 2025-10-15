@@ -78,7 +78,7 @@ def update_db(db_path, data):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("사용법: python update_db.py 파일명.pdf")
+        print("사용법: python update_db.py menu/파일명.pdf")
         sys.exit(1)
 
     filename = sys.argv[1]
