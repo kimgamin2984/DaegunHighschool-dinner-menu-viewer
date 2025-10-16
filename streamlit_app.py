@@ -17,6 +17,7 @@ today_str = today.strftime("%Y%m%d")
 filename = os.path.join("menu", f"{today.year}{today.month:02}.pdf")
 load_dotenv()
 API_KEY = os.getenv("NEIS_KEY") or st.secrets["NEIS_KEY"]
+DINNER_KEY = os.getenv("DINNER_KEY") or st.secrets["DINNER_KEY"]
 ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
 
@@ -48,7 +49,8 @@ with tab2:
     st.markdown("## 석식 식단")
     url = 'https://daegundinnerapi.onrender.com/menu'
     params = {
-        'date': today_str
+        'date': today_str,
+        'key' : DINNER_KEY
     }
     try:
         res = requests.get(url, params=params, timeout=30)
