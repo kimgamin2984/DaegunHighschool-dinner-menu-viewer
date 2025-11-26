@@ -34,7 +34,7 @@ with tab1:
         'MLSV_YMD': today_str
     }
     try:
-        res = requests.get(url, params=params, timeout=30)
+        res = requests.get(url, params=params)
         data = res.json()
         meals = data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']
         cleaned = meals.replace('<br/>', '\n')
@@ -53,7 +53,7 @@ with tab2:
         'key' : DINNER_KEY
     }
     try:
-        res = requests.get(url, params=params, timeout=30)
+        res = requests.get(url, params=params)
         data = res.json()
         meals = data['menu']
         for item in meals:
@@ -83,7 +83,7 @@ with tab3:
     }
 
     try:
-        res = requests.get(url, params=params, stream=True, timeout=15)
+        res = requests.get(url, params=params, stream=True)
         raw = res.raw.read(decode_content=True)
         data = json.loads(raw)
         timetable = data['hisTimetable'][1]['row']
