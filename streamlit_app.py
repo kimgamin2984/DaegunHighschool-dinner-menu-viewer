@@ -5,6 +5,7 @@ import os
 import requests
 from pytz import timezone
 from dotenv import load_dotenv
+import db_update
 
 st.title('대건고등학교')
 
@@ -47,23 +48,55 @@ with tab1:
 
 with tab2:
     st.markdown("## 석식 식단")
-    url = 'https://daegundinnerapi.onrender.com/menu'
-    params = {
-        'date': today_str,
-        'key' : DINNER_KEY
-    }
-    try:
-        res = requests.get(url, params=params)
-        data = res.json()
-        meals = data['menu']
+
+    DB_PATH = "dinner_menu.db"
+
+    msg = st.empty()
+
+    def load_from_db(date):
+        import sqlite3
+        if not os.path.exists(DB_PATH):
+            return None
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cur = conn.cursor()
+            cur.execute("SELECT menu FROM dinner WHERE date = ?", (date,))
+            row = cur.fetchone()
+            conn.close()
+            if row:
+                return row[0].split("\n")
+        except:
+            pass
+        return None
+
+    meals = load_from_db(today_str)
+
+    if not meals:
+        msg.info("API 호출 중...")
+
+        try:
+            ok = db_update.update_db(DB_PATH, today_str, DINNER_KEY)
+
+            if ok:
+                meals = load_from_db(today_str)
+                msg.empty()
+            else:
+                msg.empty()
+        except Exception as e:
+            msg.empty()
+            st.error("DB 업데이트 중 오류 발생")
+            st.error(e)
+
+    else:
+        msg.empty()
+
+    if not meals:
+        st.error("석식 정보를 찾을 수 없습니다.")
+    else:
         for item in meals:
             st.markdown(f"- {item}")
-    except Exception as e:
-        st.error("석식 정보가 없습니다.")
-        st.error(e)
 
     st.markdown('--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우유 ③메밀 ④땅콩 ⑤대두 ⑥밀 ⑦고등어 ⑧게 ⑨새우 ⑩돼지고기 ⑪복숭아 \n\n ⑫토마토 ⑬아황산염 ⑭호두 ⑮닭고기 ⑯쇠고기 ⑰오징어 ⑱조개류(전복, 홍합포함) ⑲잣')
-
 
 with tab3:
     st.markdown("## 시간표")
