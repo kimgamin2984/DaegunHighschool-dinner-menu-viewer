@@ -46,6 +46,33 @@ with tab1:
 
     st.markdown('--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우유 ③메밀 ④땅콩 ⑤대두 ⑥밀 ⑦고등어 ⑧게 ⑨새우 ⑩돼지고기 ⑪복숭아 \n\n ⑫토마토 ⑬아황산염 ⑭호두 ⑮닭고기 ⑯쇠고기 ⑰오징어 ⑱조개류(전복, 홍합포함) ⑲잣')
 
+with tab3:
+    st.markdown("## 시간표")
+
+    grade = st.selectbox("학년", ["1", "2", "3"], index=0)
+    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=0)
+
+    url = 'https://open.neis.go.kr/hub/hisTimetable'
+    params = {
+        'KEY': API_KEY,
+        'Type': 'json',
+        'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
+        'SD_SCHUL_CODE': SD_SCHUL_CODE,
+        'GRADE': grade,
+        'CLASS_NM': class_nm,
+        'ALL_TI_YMD': today_str
+    }
+
+    try:
+        res = requests.get(url, params=params, stream=True)
+        raw = res.raw.read(decode_content=True)
+        data = json.loads(raw)
+        timetable = data['hisTimetable'][1]['row']
+        for period in timetable:
+            st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
+    except:
+        st.error("시간표 정보를 불러올 수 없습니다.")
+
 with tab2:
     st.markdown("## 석식 식단")
 
@@ -97,30 +124,3 @@ with tab2:
             st.markdown(f"- {item}")
 
     st.markdown('--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우유 ③메밀 ④땅콩 ⑤대두 ⑥밀 ⑦고등어 ⑧게 ⑨새우 ⑩돼지고기 ⑪복숭아 \n\n ⑫토마토 ⑬아황산염 ⑭호두 ⑮닭고기 ⑯쇠고기 ⑰오징어 ⑱조개류(전복, 홍합포함) ⑲잣')
-
-with tab3:
-    st.markdown("## 시간표")
-
-    grade = st.selectbox("학년", ["1", "2", "3"], index=0)
-    class_nm = st.selectbox("반", [str(i) for i in range(1, 10)], index=0)
-
-    url = 'https://open.neis.go.kr/hub/hisTimetable'
-    params = {
-        'KEY': API_KEY,
-        'Type': 'json',
-        'ATPT_OFCDC_SC_CODE': ATPT_OFCDC_SC_CODE,
-        'SD_SCHUL_CODE': SD_SCHUL_CODE,
-        'GRADE': grade,
-        'CLASS_NM': class_nm,
-        'ALL_TI_YMD': today_str
-    }
-
-    try:
-        res = requests.get(url, params=params, stream=True)
-        raw = res.raw.read(decode_content=True)
-        data = json.loads(raw)
-        timetable = data['hisTimetable'][1]['row']
-        for period in timetable:
-            st.text(f"{period['PERIO']}교시: {period['ITRT_CNTNT']}")
-    except:
-        st.error("시간표 정보를 불러올 수 없습니다.")
