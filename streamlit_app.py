@@ -22,6 +22,8 @@ DINNER_KEY = os.getenv("DINNER_KEY") or st.secrets["DINNER_KEY"]
 ATPT_OFCDC_SC_CODE = 'D10'
 SD_SCHUL_CODE = '7240082'
 
+allergyinfo = '--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우유 ③메밀 ④땅콩 ⑤대두 ⑥밀 ⑦고등어 ⑧게 ⑨새우 ⑩돼지고기 ⑪복숭아 \n\n ⑫토마토 ⑬아황산염 ⑭호두 ⑮닭고기 ⑯쇠고기 ⑰오징어 ⑱조개류(전복, 홍합포함) ⑲잣'
+
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
 with tab1:
@@ -44,7 +46,7 @@ with tab1:
     except:
         st.error("중식 정보가 없습니다.")
 
-    st.markdown('--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우유 ③메밀 ④땅콩 ⑤대두 ⑥밀 ⑦고등어 ⑧게 ⑨새우 ⑩돼지고기 ⑪복숭아 \n\n ⑫토마토 ⑬아황산염 ⑭호두 ⑮닭고기 ⑯쇠고기 ⑰오징어 ⑱조개류(전복, 홍합포함) ⑲잣')
+    st.markdown(allergyinfo)
 
 with tab3:
     st.markdown("## 시간표")
@@ -123,4 +125,4 @@ with tab2:
         for item in meals:
             st.markdown(f"- {item}")
 
-    st.markdown('--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우유 ③메밀 ④땅콩 ⑤대두 ⑥밀 ⑦고등어 ⑧게 ⑨새우 ⑩돼지고기 ⑪복숭아 \n\n ⑫토마토 ⑬아황산염 ⑭호두 ⑮닭고기 ⑯쇠고기 ⑰오징어 ⑱조개류(전복, 홍합포함) ⑲잣')
+    st.markdown(allergyinfo)
