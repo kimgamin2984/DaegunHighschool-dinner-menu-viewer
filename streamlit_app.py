@@ -6,26 +6,16 @@ import requests
 from pytz import timezone
 from dotenv import load_dotenv
 import db_update
-from streamlit_google_auth import Authenticate
+import streamlit as st
 
-auth = Authenticate(
-    json_path='client_secret.json', 
-    cookie_name='daegun_auth',
-    cookie_key='your_secret_key',
-    cookie_expiry_days=30,
-)
+def login_screen():
+    st.button("Log in with Google", on_click=st.login)
 
-# 만약 위에서 에러나면 secret_path를 json_path로만 바꿔봐. 
-# 최신 버전은 json_path를 써야 함.
-
-auth.check_authenticator()
-
-with st.sidebar:
-    if st.session_state.get('connected'):
-        st.write(f"{st.session_state['name']}님")
-        auth.logout("로그아웃", location='sidebar')
-    else:
-        auth.login("구글 로그인", location='sidebar')
+if not st.user.is_logged_in:
+    login_screen()
+else:
+    st.header(f"Welcome, {st.user.name}!")
+    st.button("Log out", on_click=st.logout)
 
 st.title('대건고등학교')
 
