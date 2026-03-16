@@ -8,14 +8,15 @@ from dotenv import load_dotenv
 import db_update
 import streamlit as st
 
-def login_screen():
-    st.button("Log in with Google", on_click=st.login)
-
-if not st.user.is_logged_in:
-    login_screen()
-else:
-    st.header(f"Welcome, {st.user.name}!")
-    st.button("Log out", on_click=st.logout)
+with st.sidebar:
+    st.title("사용자 인증")
+    if not st.user.is_logged_in:
+        st.info("로그인 후 이용해주세요.")
+        st.button("구글 로그인", on_click=st.login)
+    else:
+        st.write(f"✅ **{st.user.name}**님")
+        st.write(f"({st.user.email})")
+        st.button("로그아웃", on_click=st.logout)
 
 st.title('대건고등학교')
 
