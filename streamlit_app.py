@@ -164,7 +164,7 @@ with tab3:
 
         bg_color = '#101116' if dark_mode else '#ffffff'
         text_color = '#ffffff' if dark_mode else '#000000'
-        header_color = '#3d3f4b' if dark_mode else '#f2f2f2'
+        header_color = '#27272F' if dark_mode else '#F1F2F6'
         
         grid_color = '#bbbbbb' if dark_mode else '#333333' 
 
