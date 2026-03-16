@@ -15,6 +15,9 @@ auth = Authenticate(
     cookie_expiry_days=30,
 )
 
+# 만약 위에서 에러나면 secret_path를 json_path로만 바꿔봐. 
+# 최신 버전은 json_path를 써야 함.
+
 auth.check_authenticator()
 
 with st.sidebar:
@@ -23,6 +26,7 @@ with st.sidebar:
         auth.logout("로그아웃", location='sidebar')
     else:
         auth.login("구글 로그인", location='sidebar')
+
 st.title('대건고등학교')
 
 today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
