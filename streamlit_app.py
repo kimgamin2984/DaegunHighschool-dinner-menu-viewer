@@ -351,7 +351,6 @@ allergyinfo = '--- \n\n #### 알러지 정보 \n\n ①난류(가금류) ②우�
 
 tab1, tab2, tab3 = st.tabs(["중식", "석식", "시간표"])
 
-# --- 중식 탭 ---
 with tab1:
     st.markdown("## 중식 식단")
     url = 'https://open.neis.go.kr/hub/mealServiceDietInfo'
@@ -367,11 +366,9 @@ with tab1:
         st.error("중식 정보가 없습니다.")
     st.markdown(allergyinfo)
 
-# --- 시간표 탭 ---
 with tab3:
     st.title('시간표 생성기')
     
-    # 테마 설정 (다크모드 온오프)
     is_dark = st.toggle("🌙 다크 모드", value=False)
     
     default_grade = "1"
@@ -437,18 +434,18 @@ with tab3:
         periods = [f'{i}교시' for i in range(1, 8)]
         df_tt = pd.DataFrame(data_array, columns=days, index=periods)
 
-        # 색상 정의
         bg_color = '#262730' if dark_mode else '#ffffff'
         text_color = '#ffffff' if dark_mode else '#000000'
         header_color = '#3d3f4b' if dark_mode else '#f2f2f2'
-        grid_color = '#555555' if dark_mode else '#cccccc'
+        
+        grid_color = '#bbbbbb' if dark_mode else '#333333' 
 
         fig, ax = plt.subplots(figsize=(10, 8))
         fig.patch.set_facecolor(bg_color)
         ax.axis('off')
 
         fe = fm.FontEntry(fname='./경기천년체/경기천년바탕_Bold.ttf', name='경기')
-        fm.fontManager.ttflist.insert(0,fe)
+        fm.fontManager.ttflist.insert(0, fe)
         plt.rc('font', family='경기')
 
         table = ax.table(
@@ -464,14 +461,15 @@ with tab3:
         table.auto_set_font_size(True)
         table.scale(1, 4)
 
-        # 셀 속성 적용
         for (row, col), cell in table.get_celld().items():
             cell.set_edgecolor(grid_color)
+            cell.set_linewidth(1.5)
             cell.get_text().set_color(text_color)
-            if row == 0 or col == -1: # 헤더 영역
+            
+            if row == 0 or col == -1:
                 cell.set_facecolor(header_color)
                 cell.get_text().set_weight('bold')
-            else: # 본문 영역
+            else:
                 cell.set_facecolor(bg_color)
 
         buf = BytesIO()
@@ -489,7 +487,6 @@ with tab3:
     except Exception as e:
         st.error(f"시간표 생성 실패: {e}")
 
-# --- 석식 탭 ---
 with tab2:
     st.markdown("## 석식 식단")
     DB_PATH = "dinner_menu.db"
