@@ -4,3 +4,7 @@ requests
 pymupdf
 pytz
 python-dotenv
+pandas
+openpyxl
+numpy
+matplotlib
