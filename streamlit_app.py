@@ -9,7 +9,7 @@ import db_update
 from streamlit_google_auth import Authenticate
 
 auth = Authenticate(
-    secret_path='client_secret.json', 
+    json_path='client_secret.json', 
     cookie_name='daegun_auth',
     cookie_key='your_secret_key',
     cookie_expiry_days=30,
