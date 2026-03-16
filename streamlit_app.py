@@ -13,14 +13,14 @@ from io import BytesIO
 import numpy as np
 import pandas as pd
 
-# with st.sidebar:
-#     st.title("사용자 인증")
-#     if not st.user.is_logged_in:
-#         st.button("구글 로그인", on_click=st.login)
-#     else:
-#         st.write(f"**{st.user.name}**님")
-#         st.write(f"({st.user.email})")
-#         st.button("로그아웃", on_click=st.logout)
+with st.sidebar:
+    st.title("사용자 인증")
+    if not st.user.is_logged_in:
+        st.button("구글 로그인", on_click=st.login)
+    else:
+        st.write(f"**{st.user.name}**님")
+        st.write(f"({st.user.email})")
+        st.button("로그아웃", on_click=st.logout)
 
 st.title('대건고등학교')
 
