@@ -3,3 +3,4 @@ requests
 pymupdf
 pytz
 python-dotenv
+streamlit-google-auth

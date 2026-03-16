@@ -6,7 +6,23 @@ import requests
 from pytz import timezone
 from dotenv import load_dotenv
 import db_update
+from streamlit_google_auth import Authenticate
 
+auth = Authenticate(
+    secret_path='client_secret.json', 
+    cookie_name='daegun_auth',
+    cookie_key='your_secret_key',
+    cookie_expiry_days=30,
+)
+
+auth.check_authenticator()
+
+with st.sidebar:
+    if st.session_state.get('connected'):
+        st.write(f"{st.session_state['name']}님")
+        auth.logout("로그아웃", location='sidebar')
+    else:
+        auth.login("구글 로그인", location='sidebar')
 st.title('대건고등학교')
 
 today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
