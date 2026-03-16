@@ -257,7 +257,7 @@ with tab3:
     code1 = float(f'{grade}0{class_nm}1')
 
     try:
-        df = pd.read_excel('Timetable_all_raw.xlsx', header=None)
+        df = pd.read_excel('Timetable_all_raw_v2.xlsx', header=None)
         raw = df.loc[df[0] == code1, 2:36].iloc[0]
     except Exception as e:
         st.error("엑셀 파일에서 해당 반의 시간표 데이터를 찾을 수 없습니다.")
