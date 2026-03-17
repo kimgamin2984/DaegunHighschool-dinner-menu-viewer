@@ -2,4 +2,4 @@
 .pyc
 __pycache__/
 .stremalit
-config.toml
+*.toml
