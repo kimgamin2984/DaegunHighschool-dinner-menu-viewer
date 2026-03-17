@@ -54,7 +54,6 @@ def save_user_data(email, grade, class_nm, sel_dict):
 
 init_user_db()
 
-# --- 사이드바 ---
 with st.sidebar:
     st.title("사용자 인증")
     if not st.user.is_logged_in:
@@ -96,7 +95,8 @@ with tab1:
 
 with tab3:
     st.title('시간표 생성기')
-    
+
+    current_theme = st.get_option("theme.base")
     is_dark = st.toggle("🌙 다크 모드", value=False)
     
     default_grade = "1"
