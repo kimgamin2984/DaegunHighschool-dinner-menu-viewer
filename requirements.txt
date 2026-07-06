@@ -1,5 +1,6 @@
 streamlit>=1.42.0
-streamlit[auth]
+Authlib>=1.3.2
+httpx
 requests
 pymupdf
 pytz
