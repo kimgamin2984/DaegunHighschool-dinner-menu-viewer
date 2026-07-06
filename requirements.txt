@@ -8,3 +8,5 @@ pandas
 openpyxl
 numpy
 matplotlib
+st-gsheets-connection
+st-theme

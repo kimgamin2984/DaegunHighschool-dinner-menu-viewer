@@ -1,4 +1,3 @@
-import sqlite3
 import streamlit as st
 from datetime import datetime
 import os
@@ -11,64 +10,75 @@ import matplotlib.font_manager as fm
 from io import BytesIO
 import numpy as np
 import pandas as pd
+import sqlite3
+from streamlit_gsheets import GSheetsConnection
 
-USER_DB_PATH = "user_data.db"
-
-def init_user_db():
-    conn = sqlite3.connect(USER_DB_PATH)
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS user_electives (
-            email TEXT PRIMARY KEY,
-            grade TEXT,
-            class_nm TEXT,
-            sel_A TEXT, sel_B TEXT, sel_C TEXT, sel_D TEXT,
-            sel_E TEXT, sel_F TEXT, sel_G TEXT, sel_H TEXT,
-            dark_mode INTEGER DEFAULT 0
-        )
-    ''')
-    try:
-        conn.execute('ALTER TABLE user_electives ADD COLUMN dark_mode INTEGER DEFAULT 0')
-    except sqlite3.OperationalError:
-        pass
-    conn.commit()
-    conn.close()
+conn_gsheets = st.connection("gsheets", type=GSheetsConnection)
 
 def load_user_data(email):
-    conn = sqlite3.connect(USER_DB_PATH)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM user_electives WHERE email = ?", (email,))
-    row = cur.fetchone()
-    conn.close()
-    return row
+    try:
+        df = conn_gsheets.read(ttl=0)
+        
+        if df.empty or 'email' not in df.columns:
+            return None
+            
+        user_df = df[df['email'] == email]
+        if not user_df.empty:
+            row = user_df.iloc[0].to_dict()
+            return [
+                row.get('email'),
+                str(row.get('grade', '1')),
+                str(row.get('class_nm', '1')),
+                row.get('sel_A', ''), row.get('sel_B', ''), row.get('sel_C', ''), row.get('sel_D', ''),
+                row.get('sel_E', ''), row.get('sel_F', ''), row.get('sel_G', ''), row.get('sel_H', ''),
+                int(row.get('dark_mode', 0)) if pd.notna(row.get('dark_mode')) else 0
+            ]
+    except Exception as e:
+        st.error(f"구글 시트 로드 실패: {e}")
+    return None
 
 def save_user_data(email, grade, class_nm, sel_dict, dark_mode):
-    conn = sqlite3.connect(USER_DB_PATH)
-    dm_val = 1 if dark_mode else 0
-    conn.execute('''
-        INSERT OR REPLACE INTO user_electives
-        (email, grade, class_nm, sel_A, sel_B, sel_C, sel_D, sel_E, sel_F, sel_G, sel_H, dark_mode)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (
-        email, grade, class_nm,
-        sel_dict.get('선택 A', ''), sel_dict.get('선택 B', ''), 
-        sel_dict.get('선택 C', ''), sel_dict.get('선택 D', ''), 
-        sel_dict.get('선택 E', ''), sel_dict.get('선택 F', ''), 
-        sel_dict.get('선택 G', ''), sel_dict.get('선택 H', ''),
-        dm_val
-    ))
-    conn.commit()
-    conn.close()
+    try:
+        try:
+            df = conn_gsheets.read(ttl=0)
+        except:
+            df = pd.DataFrame()
 
-init_user_db()
+        columns = ['email', 'grade', 'class_nm', 'sel_A', 'sel_B', 'sel_C', 'sel_D', 'sel_E', 'sel_F', 'sel_G', 'sel_H', 'dark_mode']
+        if df.empty or 'email' not in df.columns:
+            df = pd.DataFrame(columns=columns)
+
+        dm_val = 1 if dark_mode else 0
+        new_row = {
+            'email': email, 'grade': str(grade), 'class_nm': str(class_nm),
+            'sel_A': sel_dict.get('선택 A', ''), 'sel_B': sel_dict.get('선택 B', ''),
+            'sel_C': sel_dict.get('선택 C', ''), 'sel_D': sel_dict.get('선택 D', ''),
+            'sel_E': sel_dict.get('선택 E', ''), 'sel_F': sel_dict.get('선택 F', ''),
+            'sel_G': sel_dict.get('선택 G', ''), 'sel_H': sel_dict.get('선택 H', ''),
+            'dark_mode': dm_val
+        }
+
+        if email in df['email'].values:
+            idx = df[df['email'] == email].index[0]
+            for col, val in new_row.items():
+                df.at[idx, col] = val
+        else:
+            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+
+        conn_gsheets.update(data=df)
+    except Exception as e:
+        st.error(f"구글 시트 저장 실패: {e}")
 
 with st.sidebar:
     st.title("사용자 인증")
     if not st.user.is_logged_in:
-        st.button("구글 로그인", on_click=st.login)
+        if st.button("구글 로그인"):
+            st.login("google")
     else:
         st.write(f"**{st.user.name}**님")
         st.write(f"({st.user.email})")
-        st.button("로그아웃", on_click=st.logout)
+        if st.button("로그아웃"):
+            st.logout()
 
 st.title('대건고등학교')
 
@@ -102,7 +112,6 @@ with tab1:
 
 with tab3:
     st.title('시간표 생성기')
-
     default_dark = False
     default_grade = "1"
     default_class = "1"
@@ -132,7 +141,6 @@ with tab3:
         grade = st.selectbox("학년", grades_list, index=grade_idx)
     with col2:
         class_nm = st.selectbox("반", classes_list, index=class_idx)
-        
     code1 = float(f'{grade}0{class_nm}1')
 
     try:
@@ -153,7 +161,6 @@ with tab3:
             with all_cols[idx]:
                 dic[f'선택 {i}'] = st.text_input(f'선택 {i}', value=saved_sel[f'선택 {i}'])
                 elective.add(f'선택 {i}')
-        
         raw = raw.tolist()
         for i in range(35):
             if str(raw[i]) in elective:
@@ -174,7 +181,6 @@ with tab3:
         bg_color = '#101116' if dark_mode else '#ffffff'
         text_color = '#ffffff' if dark_mode else '#000000'
         header_color = '#27272F' if dark_mode else '#F1F2F6'
-        
         grid_color = '#bbbbbb' if dark_mode else '#333333' 
 
         fig, ax = plt.subplots(figsize=(10, 8))
@@ -202,7 +208,6 @@ with tab3:
             cell.set_edgecolor(grid_color)
             cell.set_linewidth(1.5)
             cell.get_text().set_color(text_color)
-            
             if row == 0 or col == -1:
                 cell.set_facecolor(header_color)
                 cell.get_text().set_weight('bold')
@@ -227,6 +232,7 @@ with tab3:
 with tab2:
     st.markdown("## 석식 식단")
     DB_PATH = "dinner_menu.db"
+    
     def load_from_db(date):
         if not os.path.exists(DB_PATH): return None
         try:
@@ -243,8 +249,9 @@ with tab2:
         with st.spinner("API 호출 중..."):
             if db_update.update_db(DB_PATH, today_str, DINNER_KEY):
                 meals = load_from_db(today_str)
-    
-    if not meals: st.error("석식 정보를 찾을 수 없습니다.")
+                
+    if not meals: 
+        st.error("석식 정보를 찾을 수 없습니다.")
     else:
         for item in meals: st.markdown(f"- {item}")
     st.markdown(allergyinfo)
