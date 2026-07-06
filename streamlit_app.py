@@ -97,7 +97,8 @@ with st.sidebar:
         if st.button("로그아웃"):
             st.logout()
             st.stop()
-    st.title('대건고등학교')
+
+st.title('대건고등학교')
 
 today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
 today_str = today.strftime("%Y%m%d")
