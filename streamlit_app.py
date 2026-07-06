@@ -67,25 +67,19 @@ def save_user_data(email, grade, class_nm, sel_dict, dark_mode):
     except Exception as e:
         st.error(f"구글 시트 저장 실패: {e}")
 
-default_dark = False
-default_grade = "1"
-default_class = "1"
-saved_sel = {f'선택 {i}': '' for i in 'ABCDEFGH'}
-
 if st.user.is_logged_in:
-    user_row = load_user_data(st.user.email)
-    if user_row:
-        default_grade = user_row[1]
-        default_class = user_row[2]
-        for idx, key in enumerate('ABCDEFGH'):
-            saved_sel[f'선택 {key}'] = user_row[3 + idx]
-        if len(user_row) > 11 and user_row[11] is not None:
-            default_dark = True if user_row[11] == 1 else False
+    if "user_data_loaded" not in st.session_state or st.session_state["user_data_loaded"] != st.user.email:
+        user_row = load_user_data(st.user.email)
+        if user_row:
+            st.session_state["sb_grade"] = user_row[1]
+            st.session_state["sb_class"] = user_row[2]
+            for idx, key in enumerate('ABCDEFGH'):
+                st.session_state[f"sel_{key}"] = user_row[3 + idx]
+            st.session_state["is_dark"] = True if user_row[11] == 1 else False
+        st.session_state["user_data_loaded"] = st.user.email
 
 grades_list = ["1", "2", "3"]
 classes_list = [str(i) for i in range(1, 10)]
-grade_idx = grades_list.index(default_grade) if default_grade in grades_list else 0
-class_idx = classes_list.index(default_class) if default_class in classes_list else 0
 
 with st.sidebar:
     st.title("사용자 인증")
@@ -96,9 +90,11 @@ with st.sidebar:
         st.write(f"({st.user.email})")
         if st.button("로그아웃"):
             st.logout()
+            for k in ["user_data_loaded", "sb_grade", "sb_class", "is_dark"] + [f"sel_{i}" for i in 'ABCDEFGH']:
+                if k in st.session_state:
+                    del st.session_state[k]
             st.stop()
-
-st.title('대건고등학교')
+    st.title('대건고등학교')
 
 today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
 today_str = today.strftime("%Y%m%d")
@@ -134,13 +130,13 @@ with tab3:
     if not st.user.is_logged_in:
         st.info("💡 로그인하면 학년, 반, 선택과목 정보를 저장해둘 수 있습니다.")
 
-    is_dark = st.toggle("🌙 다크 모드", value=default_dark)
+    is_dark = st.toggle("🌙 다크 모드", key="is_dark", value=False)
 
     col1, col2 = st.columns(2)
     with col1:
-        grade = st.selectbox("학년", grades_list, index=grade_idx)
+        grade = st.selectbox("학년", grades_list, key="sb_grade", index=0)
     with col2:
-        class_nm = st.selectbox("반", classes_list, index=class_idx)
+        class_nm = st.selectbox("반", classes_list, key="sb_class", index=0)
     
     code1 = float(f'{grade}0{class_nm}1')
 
@@ -160,7 +156,7 @@ with tab3:
         all_cols = cols1 + cols2
         for idx, i in enumerate('ABCDEFGH'):
             with all_cols[idx]:
-                dic[f'선택 {i}'] = st.text_input(f'선택 {i}', value=saved_sel[f'선택 {i}'])
+                dic[f'선택 {i}'] = st.text_input(f'선택 {i}', key=f"sel_{i}", value="")
                 elective.add(f'선택 {i}')
         raw = raw.tolist()
         for i in range(35):
