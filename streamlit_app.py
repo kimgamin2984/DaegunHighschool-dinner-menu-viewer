@@ -18,10 +18,8 @@ conn_gsheets = st.connection("gsheets", type=GSheetsConnection)
 def load_user_data(email):
     try:
         df = conn_gsheets.read(ttl=0)
-        
         if df.empty or 'email' not in df.columns:
             return None
-            
         user_df = df[df['email'] == email]
         if not user_df.empty:
             row = user_df.iloc[0].to_dict()
@@ -35,7 +33,7 @@ def load_user_data(email):
             ]
     except Exception as e:
         st.error(f"구글 시트 로드 실패: {e}")
-    return None
+        return None
 
 def save_user_data(email, grade, class_nm, sel_dict, dark_mode):
     try:
@@ -69,20 +67,37 @@ def save_user_data(email, grade, class_nm, sel_dict, dark_mode):
     except Exception as e:
         st.error(f"구글 시트 저장 실패: {e}")
 
+default_dark = False
+default_grade = "1"
+default_class = "1"
+saved_sel = {f'선택 {i}': '' for i in 'ABCDEFGH'}
+
+if st.user.is_logged_in:
+    user_row = load_user_data(st.user.email)
+    if user_row:
+        default_grade = user_row[1]
+        default_class = user_row[2]
+        for idx, key in enumerate('ABCDEFGH'):
+            saved_sel[f'선택 {key}'] = user_row[3 + idx]
+        if len(user_row) > 11 and user_row[11] is not None:
+            default_dark = True if user_row[11] == 1 else False
+
+grades_list = ["1", "2", "3"]
+classes_list = [str(i) for i in range(1, 10)]
+grade_idx = grades_list.index(default_grade) if default_grade in grades_list else 0
+class_idx = classes_list.index(default_class) if default_class in classes_list else 0
+
 with st.sidebar:
     st.title("사용자 인증")
     if not st.user.is_logged_in:
-        if st.button("구글 로그인"):
-            st.login("google")
-
+        st.button("구글 로그인", on_click=st.login, args=["google"])
     else:
         st.write(f"**{st.user.name}**님")
         st.write(f"({st.user.email})")
         if st.button("로그아웃"):
             st.logout()
             st.stop()
-            
-st.title('대건고등학교')
+    st.title('대건고등학교')
 
 today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
 today_str = today.strftime("%Y%m%d")
@@ -114,35 +129,18 @@ with tab1:
 
 with tab3:
     st.title('시간표 생성기')
-    default_dark = False
-    default_grade = "1"
-    default_class = "1"
-    saved_sel = {f'선택 {i}': '' for i in 'ABCDEFGH'}
-
-    if st.user.is_logged_in:
-        user_row = load_user_data(st.user.email)
-        if user_row:
-            default_grade = user_row[1]
-            default_class = user_row[2]
-            for idx, key in enumerate('ABCDEFGH'):
-                saved_sel[f'선택 {key}'] = user_row[3 + idx]
-            if len(user_row) > 11 and user_row[11] is not None:
-                default_dark = True if user_row[11] == 1 else False
-    else:
+    
+    if not st.user.is_logged_in:
         st.info("💡 로그인하면 학년, 반, 선택과목 정보를 저장해둘 수 있습니다.")
 
     is_dark = st.toggle("🌙 다크 모드", value=default_dark)
-
-    grades_list = ["1", "2", "3"]
-    classes_list = [str(i) for i in range(1, 10)]
-    grade_idx = grades_list.index(default_grade) if default_grade in grades_list else 0
-    class_idx = classes_list.index(default_class) if default_class in classes_list else 0
 
     col1, col2 = st.columns(2)
     with col1:
         grade = st.selectbox("학년", grades_list, index=grade_idx)
     with col2:
         class_nm = st.selectbox("반", classes_list, index=class_idx)
+    
     code1 = float(f'{grade}0{class_nm}1')
 
     try:
@@ -234,7 +232,6 @@ with tab3:
 with tab2:
     st.markdown("## 석식 식단")
     DB_PATH = "dinner_menu.db"
-    
     def load_from_db(date):
         if not os.path.exists(DB_PATH): return None
         try:
@@ -251,9 +248,8 @@ with tab2:
         with st.spinner("API 호출 중..."):
             if db_update.update_db(DB_PATH, today_str, DINNER_KEY):
                 meals = load_from_db(today_str)
-                
-    if not meals: 
-        st.error("석식 정보를 찾을 수 없습니다.")
+        if not meals: 
+            st.error("석식 정보를 찾을 수 없습니다.")
     else:
         for item in meals: st.markdown(f"- {item}")
     st.markdown(allergyinfo)
