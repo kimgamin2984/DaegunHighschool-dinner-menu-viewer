@@ -94,7 +94,8 @@ with st.sidebar:
                 if k in st.session_state:
                     del st.session_state[k]
             st.stop()
-    st.title('대건고등학교')
+
+st.title('대건고등학교')
 
 today = st.date_input("조회일", value=datetime.now(timezone('Asia/Seoul')))
 today_str = today.strftime("%Y%m%d")
