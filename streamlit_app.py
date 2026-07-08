@@ -67,6 +67,53 @@ def save_user_data(email, grade, class_nm, sel_dict, dark_mode):
     except Exception as e:
         st.error(f"구글 시트 저장 실패: {e}")
 
+def create_timetable_image(data_array, dark_mode=False):
+    days = ['월', '화', '수', '목', '금']
+    periods = [f'{i}교시' for i in range(1, 8)]
+    df_tt = pd.DataFrame(data_array, columns=days, index=periods)
+
+    bg_color = '#101116' if dark_mode else '#ffffff'
+    text_color = '#ffffff' if dark_mode else '#000000'
+    header_color = '#27272F' if dark_mode else '#F1F2F6'
+    grid_color = '#bbbbbb' if dark_mode else '#333333' 
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    fig.patch.set_facecolor(bg_color)
+    ax.axis('off')
+
+    fe = fm.FontEntry(fname='./경기천년체/경기천년바탕_Bold.ttf', name='경기')
+    fm.fontManager.ttflist.insert(0, fe)
+    plt.rc('font', family='경기')
+
+    table = ax.table(
+        cellText=df_tt.values,
+        colLabels=df_tt.columns,
+        rowLabels=df_tt.index,
+        cellLoc='center',
+        loc='center',
+        colColours=[header_color] * 5,
+        rowColours=[header_color] * 7
+    )
+
+    table.auto_set_font_size(True)
+    table.scale(1, 4)
+
+    for (row, col), cell in table.get_celld().items():
+        cell.set_edgecolor(grid_color)
+        cell.set_linewidth(1.5)
+        cell.get_text().set_color(text_color)
+        if row == 0 or col == -1:
+            cell.set_facecolor(header_color)
+            cell.get_text().set_weight('bold')
+        else:
+            cell.set_facecolor(bg_color)
+
+    buf = BytesIO()
+    plt.savefig(buf, format="png", bbox_inches='tight', dpi=300, facecolor=bg_color)
+    buf.seek(0)
+    plt.close(fig)
+    return buf
+
 default_dark = False
 default_grade = "1"
 default_class = "1"
@@ -128,7 +175,8 @@ with tab1:
         st.error("중식 정보가 없습니다.")
     st.markdown(allergyinfo)
 
-with tab3:
+@st.fragment
+def render_timetable():
     st.title('시간표 생성기')
     
     if not st.user.is_logged_in:
@@ -149,7 +197,7 @@ with tab3:
         raw = df.loc[df[0] == code1, 2:36].iloc[0]
     except:
         st.error("엑셀 파일에서 해당 반의 시간표 데이터를 찾을 수 없습니다.")
-        st.stop()
+        return
 
     dic = {}
     elective = set()
@@ -174,53 +222,6 @@ with tab3:
 
     result = np.array(raw).reshape(-1,7).T
 
-    def create_timetable_image(data_array, dark_mode=False):
-        days = ['월', '화', '수', '목', '금']
-        periods = [f'{i}교시' for i in range(1, 8)]
-        df_tt = pd.DataFrame(data_array, columns=days, index=periods)
-
-        bg_color = '#101116' if dark_mode else '#ffffff'
-        text_color = '#ffffff' if dark_mode else '#000000'
-        header_color = '#27272F' if dark_mode else '#F1F2F6'
-        grid_color = '#bbbbbb' if dark_mode else '#333333' 
-
-        fig, ax = plt.subplots(figsize=(10, 8))
-        fig.patch.set_facecolor(bg_color)
-        ax.axis('off')
-
-        fe = fm.FontEntry(fname='./경기천년체/경기천년바탕_Bold.ttf', name='경기')
-        fm.fontManager.ttflist.insert(0, fe)
-        plt.rc('font', family='경기')
-
-        table = ax.table(
-            cellText=df_tt.values,
-            colLabels=df_tt.columns,
-            rowLabels=df_tt.index,
-            cellLoc='center',
-            loc='center',
-            colColours=[header_color] * 5,
-            rowColours=[header_color] * 7
-        )
-
-        table.auto_set_font_size(True)
-        table.scale(1, 4)
-
-        for (row, col), cell in table.get_celld().items():
-            cell.set_edgecolor(grid_color)
-            cell.set_linewidth(1.5)
-            cell.get_text().set_color(text_color)
-            if row == 0 or col == -1:
-                cell.set_facecolor(header_color)
-                cell.get_text().set_weight('bold')
-            else:
-                cell.set_facecolor(bg_color)
-
-        buf = BytesIO()
-        plt.savefig(buf, format="png", bbox_inches='tight', dpi=300, facecolor=bg_color)
-        buf.seek(0)
-        plt.close(fig)
-        return buf
-
     st.markdown('---')
     try:
         img_buf = create_timetable_image(result, dark_mode=is_dark)
@@ -229,6 +230,9 @@ with tab3:
         st.download_button(label="이미지 다운로드", data=img_buf, file_name="timetable.png", mime="image/png")
     except Exception as e:
         st.error(f"시간표 생성 실패: {e}")
+
+with tab3:
+    render_timetable()
 
 with tab2:
     st.markdown("## 석식 식단")
