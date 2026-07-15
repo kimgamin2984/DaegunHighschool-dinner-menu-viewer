@@ -186,9 +186,9 @@ def render_timetable():
 
     col1, col2 = st.columns(2)
     with col1:
-        grade = st.selectbox("학년", grades_list, index=grade_idx)
+        grade = st.selectbox("학년", grades_list, index=grade_idx, key="grade_sel")
     with col2:
-        class_nm = st.selectbox("반", classes_list, index=class_idx)
+        class_nm = st.selectbox("반", classes_list, index=class_idx, key="class_sel")
     
     code1 = float(f'{grade}0{class_nm}1')
 
