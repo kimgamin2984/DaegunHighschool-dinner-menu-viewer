@@ -119,6 +119,13 @@ default_grade = "1"
 default_class = "1"
 saved_sel = {f'선택 {i}': '' for i in 'ABCDEFGH'}
 
+if "grade_sel" not in st.session_state:
+    st.session_state["grade_sel"] = "1"
+if "class_sel" not in st.session_state:
+    st.session_state["class_sel"] = "1"
+if "loaded_user" not in st.session_state:
+    st.session_state["loaded_user"] = None
+
 if st.user.is_logged_in:
     user_row = load_user_data(st.user.email)
     if user_row:
@@ -128,11 +135,15 @@ if st.user.is_logged_in:
             saved_sel[f'선택 {key}'] = user_row[3 + idx]
         if len(user_row) > 11 and user_row[11] is not None:
             default_dark = True if user_row[11] == 1 else False
+    if st.session_state["loaded_user"] != st.user.email:
+        st.session_state["grade_sel"] = default_grade
+        st.session_state["class_sel"] = default_class
+        st.session_state["loaded_user"] = st.user.email
+else:
+    st.session_state["loaded_user"] = None
 
 grades_list = ["1", "2", "3"]
 classes_list = [str(i) for i in range(1, 10)]
-grade_idx = grades_list.index(default_grade) if default_grade in grades_list else 0
-class_idx = classes_list.index(default_class) if default_class in classes_list else 0
 
 with st.sidebar:
     st.title("사용자 인증")
@@ -186,9 +197,9 @@ def render_timetable():
 
     col1, col2 = st.columns(2)
     with col1:
-        grade = st.selectbox("학년", grades_list, index=grade_idx, key="grade_sel")
+        grade = st.selectbox("학년", grades_list, key="grade_sel")
     with col2:
-        class_nm = st.selectbox("반", classes_list, index=class_idx, key="class_sel")
+        class_nm = st.selectbox("반", classes_list, key="class_sel")
     
     code1 = float(f'{grade}0{class_nm}1')
 
