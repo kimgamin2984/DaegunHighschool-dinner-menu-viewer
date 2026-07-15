@@ -119,6 +119,16 @@ default_grade = "1"
 default_class = "1"
 saved_sel = {f'선택 {i}': '' for i in 'ABCDEFGH'}
 
+if st.user.is_logged_in:
+    user_row = load_user_data(st.user.email)
+    if user_row:
+        default_grade = user_row[1]
+        default_class = user_row[2]
+        for idx, key in enumerate('ABCDEFGH'):
+            saved_sel[f'선택 {key}'] = user_row[3 + idx]
+        if len(user_row) > 11 and user_row[11] is not None:
+            default_dark = True if user_row[11] == 1 else False
+
 grades_list = ["1", "2", "3"]
 classes_list = [str(i) for i in range(1, 10)]
 grade_idx = grades_list.index(default_grade) if default_grade in grades_list else 0
