@@ -175,7 +175,7 @@ with tab1:
         st.error("중식 정보가 없습니다.")
     st.markdown(allergyinfo)
 
-@st.fragment
+# @st.fragment
 def render_timetable():
     st.title('시간표 생성기')
     
