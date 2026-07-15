@@ -122,8 +122,8 @@ saved_sel = {f'선택 {i}': '' for i in 'ABCDEFGH'}
 if st.user.is_logged_in:
     user_row = load_user_data(st.user.email)
     if user_row:
-        default_grade = int(user_row[1])
-        default_class = int(user_row[2])
+        default_grade = int(user_row[1][:1])
+        default_class = int(user_row[2][:1])
         for idx, key in enumerate('ABCDEFGH'):
             saved_sel[f'선택 {key}'] = user_row[3 + idx]
         if len(user_row) > 11 and user_row[11] is not None:
