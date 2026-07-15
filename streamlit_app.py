@@ -184,13 +184,11 @@ def render_timetable():
 
     is_dark = st.toggle("🌙 다크 모드", value=default_dark)
 
-    user_key = st.user.email if st.user.is_logged_in else "guest"
-
     col1, col2 = st.columns(2)
     with col1:
-        grade = st.selectbox("학년", grades_list, index=grade_idx, key=f"grade_{user_key}")
+        grade = st.selectbox("학년", grades_list, index=grade_idx)
     with col2:
-        class_nm = st.selectbox("반", classes_list, index=class_idx, key=f"class_{user_key}")
+        class_nm = st.selectbox("반", classes_list, index=class_idx)
     
     code1 = float(f'{grade}0{class_nm}1')
 
