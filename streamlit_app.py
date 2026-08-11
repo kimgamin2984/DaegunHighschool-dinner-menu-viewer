@@ -232,7 +232,8 @@ def render_timetable():
         st.error(f"시간표 생성 실패: {e}")
 
 with tab3:
-    render_timetable()
+    # render_timetable()
+    st.error('재구현 예정')
 
 with tab2:
     st.markdown("## 석식 식단")
